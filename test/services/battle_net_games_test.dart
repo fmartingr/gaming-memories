@@ -32,6 +32,7 @@ void main() {
       'wow_retail',
       'wow_classic',
       'wow_classic_era',
+      'wow_forever_beta',
       'diablo_iv',
       'diablo_iii',
       'starcraft_ii',
@@ -43,10 +44,16 @@ void main() {
     expect(game('wow_retail').albumName, 'World of Warcraft');
     expect(game('wow_classic').albumName, 'WoW Classic');
     expect(game('wow_classic_era').albumName, 'WoW Classic Era');
+    expect(game('wow_forever_beta').albumName, 'WoW Forever Beta');
   });
 
   test('World of Warcraft reads TGA and dates from the file name', () {
-    for (final id in ['wow_retail', 'wow_classic', 'wow_classic_era']) {
+    for (final id in [
+      'wow_retail',
+      'wow_classic',
+      'wow_classic_era',
+      'wow_forever_beta',
+    ]) {
       expect(game(id).extensions, contains('.tga'));
       expect(game(id).captureDate, BattleNetCaptureDate.fileName);
     }
@@ -65,6 +72,16 @@ void main() {
       p.join(
         r'C:\Program Files (x86)\World of Warcraft',
         '_classic_',
+        'Screenshots',
+      ),
+    ]);
+    expect(locator().defaultPathsFor(game('wow_forever_beta')), [
+      '/Applications/World of Warcraft/_classic_beta_/Screenshots',
+    ]);
+    expect(locator(os: 'windows').defaultPathsFor(game('wow_forever_beta')), [
+      p.join(
+        r'C:\Program Files (x86)\World of Warcraft',
+        '_classic_beta_',
         'Screenshots',
       ),
     ]);

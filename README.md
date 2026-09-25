@@ -44,7 +44,7 @@ platform and game, or open a capture for a closer look without leaving the app.
 
 | Source | Collected from | Extra setup |
 | --- | --- | --- |
-| **Battle.net** | Installed Diablo IV and World of Warcraft capture folders | None |
+| **Battle.net** | Game screenshot folders | Select game folders on Linux |
 | **Guild Wars 2** | Game screenshot folder | None |
 | **Hytale** | `Pictures/Hytale Screenshots` | None |
 | **Minecraft** | Launcher screenshot folders, including supported Linux Flatpak layouts | None |

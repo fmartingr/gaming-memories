@@ -129,6 +129,12 @@ final battleNetGames = <BattleNetGame>[
     albumName: 'WoW Classic Era',
     flavor: '_classic_era_',
   ),
+  _worldOfWarcraft(
+    id: 'wow_forever_beta',
+    name: 'WoW Forever Beta',
+    albumName: 'WoW Forever Beta',
+    flavor: '_classic_beta_',
+  ),
   const BattleNetGame(
     id: 'diablo_iv',
     name: 'Diablo IV',
