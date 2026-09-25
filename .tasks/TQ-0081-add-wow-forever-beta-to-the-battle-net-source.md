@@ -1,5 +1,5 @@
 ---
-id: TQ-0072
+id: TQ-0081
 title: Add WoW Forever Beta to the Battle.net source
 status: done
 priority: normal

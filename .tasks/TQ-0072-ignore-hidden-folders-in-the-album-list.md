@@ -1,5 +1,5 @@
 ---
-id: TQ-0081
+id: TQ-0072
 title: Ignore hidden folders in the album list
 status: done
 priority: normal
