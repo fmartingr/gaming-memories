@@ -60,6 +60,7 @@ sources that have one.
 
 Battle.net checks a separate screenshot folder for each listed game and version.
 Select a custom folder when automatic detection finds no screenshot folder.
+The source uses dates from supported screenshot filenames. It uses file dates for other games.
 
 Each source's setup and behavior is described in the
 [documentation](https://fmartingr.github.io/gaming-memories/docs.html).

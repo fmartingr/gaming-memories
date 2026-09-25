@@ -98,8 +98,11 @@ void main() {
         modified: DateTime(2026, 9, 18, 9, 10, 11),
       );
       await writeShot(
-        p.join(documents(['Warcraft III', 'ScreenShots']), 'wc3.png'),
-        modified: DateTime(2026, 9, 19, 10, 11, 12),
+        p.join(
+          documents(['Warcraft III', 'ScreenShots']),
+          'WC3ScrnShot_092526_173407_000.png',
+        ),
+        modified: DateTime(2026, 9, 25, 17, 34, 8),
       );
       final legacyOverwatch = p.join(home.path, 'legacy-overwatch');
       await writeShot(
@@ -123,7 +126,7 @@ void main() {
       for (final relative in [
         ['Overwatch', '2026-09-17_08-09-10.jpg'],
         ['Heroes of the Storm', '2026-09-18_09-10-11.jpg'],
-        ['Warcraft III: Reforged', '2026-09-19_10-11-12.png'],
+        ['Warcraft III: Reforged', '2026-09-25_17-34-07.png'],
         ['World of Warcraft', '2026-09-20_11-22-33.jpg'],
         ['World of Warcraft - Classic', '2026-09-21_12-23-34.png'],
         ['World of Warcraft - Classic Era', '2026-09-21_12-23-35.jpg'],
@@ -197,6 +200,17 @@ void main() {
 
   test('skips a World of Warcraft file with no date in its name', () async {
     await writeShot(p.join(wowFlavor('_retail_'), 'invalid.jpg'));
+
+    final result = await source().collect(settings());
+
+    expect(result.imported, 0);
+    expect(result.skipped, 1);
+  });
+
+  test('skips a Warcraft III file with no date in its name', () async {
+    await writeShot(
+      p.join(documents(['Warcraft III', 'ScreenShots']), 'invalid.png'),
+    );
 
     final result = await source().collect(settings());
 
@@ -377,6 +391,18 @@ void main() {
       isNull,
     );
     expect(parseWorldOfWarcraftScreenshotDate('invalid.jpg'), isNull);
+  });
+
+  test('parses Warcraft III dates from its screenshot name', () {
+    expect(
+      parseWarcraftIIIScreenshotDate('WC3ScrnShot_092526_173407_000.png'),
+      DateTime(2026, 9, 25, 17, 34, 7),
+    );
+    expect(
+      parseWarcraftIIIScreenshotDate('WC3ScrnShot_023126_173407_000.png'),
+      isNull,
+    );
+    expect(parseWarcraftIIIScreenshotDate('invalid.png'), isNull);
   });
 }
 

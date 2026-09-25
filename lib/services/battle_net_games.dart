@@ -6,9 +6,11 @@ import 'library_scanner.dart';
 
 /// Where a game's capture time comes from.
 enum BattleNetCaptureDate {
-  /// Parsed out of the file name, which is the only reliable source for games
-  /// that rewrite the modification time when the file is copied.
+  /// Parsed from a World of Warcraft screenshot file name.
   fileName,
+
+  /// Parsed from a Warcraft III screenshot file name.
+  warcraftIIIFileName,
 
   /// The file's modification time.
   modified,
@@ -246,6 +248,7 @@ final battleNetGames = <BattleNetGame>[
     name: 'Warcraft III: Reforged',
     albumName: 'Warcraft III: Reforged',
     coverAsset: 'warcraft-iii-reforged.png',
+    captureDate: BattleNetCaptureDate.warcraftIIIFileName,
     defaultPaths: {
       'macos': [
         BattleNetScreenshotPath.underHome([

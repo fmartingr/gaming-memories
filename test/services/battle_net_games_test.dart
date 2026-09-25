@@ -98,6 +98,10 @@ void main() {
     }
     expect(game('diablo_iii').captureDate, BattleNetCaptureDate.modified);
     expect(game('diablo_iii').extensions, isNot(contains('.tga')));
+    expect(
+      game('warcraft_iii_reforged').captureDate,
+      BattleNetCaptureDate.warcraftIIIFileName,
+    );
   });
 
   test('resolves the World of Warcraft flavour folders', () {

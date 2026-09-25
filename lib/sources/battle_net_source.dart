@@ -195,16 +195,21 @@ class BattleNetSource implements FolderBackedScreenshotSource {
     final game = media.folder.game;
     final file = media.file;
 
-    DateTime? capturedAt;
-    if (game.captureDate == BattleNetCaptureDate.fileName) {
-      capturedAt = parseWorldOfWarcraftScreenshotDate(p.basename(file.path));
-      if (capturedAt == null) {
-        diagnosticLog.warning(
-          'Battle.net skipped "${file.path}": its ${game.name} filename has no valid capture date.',
-          category: 'source',
-        );
-        return null;
-      }
+    final capturedAt = switch (game.captureDate) {
+      BattleNetCaptureDate.modified => null,
+      BattleNetCaptureDate.fileName => parseWorldOfWarcraftScreenshotDate(
+        p.basename(file.path),
+      ),
+      BattleNetCaptureDate.warcraftIIIFileName =>
+        parseWarcraftIIIScreenshotDate(p.basename(file.path)),
+    };
+    if (game.captureDate != BattleNetCaptureDate.modified &&
+        capturedAt == null) {
+      diagnosticLog.warning(
+        'Battle.net skipped "${file.path}": its ${game.name} filename has no valid capture date.',
+        category: 'source',
+      );
+      return null;
     }
 
     if (p.extension(file.path).toLowerCase() == '.tga') {
@@ -246,10 +251,27 @@ class BattleNetSource implements FolderBackedScreenshotSource {
 }
 
 DateTime? parseWorldOfWarcraftScreenshotDate(String name) {
-  final match = RegExp(
-    r'^WoWScrnShot_(\d{2})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})\.(?:jpe?g|png|tga)$',
-    caseSensitive: false,
-  ).firstMatch(name);
+  return _parseScreenshotDate(
+    name,
+    RegExp(
+      r'^WoWScrnShot_(\d{2})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})\.(?:jpe?g|png|tga)$',
+      caseSensitive: false,
+    ),
+  );
+}
+
+DateTime? parseWarcraftIIIScreenshotDate(String name) {
+  return _parseScreenshotDate(
+    name,
+    RegExp(
+      r'^WC3ScrnShot_(\d{2})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})_\d+\.(?:jpe?g|png)$',
+      caseSensitive: false,
+    ),
+  );
+}
+
+DateTime? _parseScreenshotDate(String name, RegExp pattern) {
+  final match = pattern.firstMatch(name);
   if (match == null) {
     return null;
   }
