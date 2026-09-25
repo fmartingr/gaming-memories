@@ -2219,6 +2219,12 @@ class LibraryController extends ChangeNotifier {
       required bool isDirectory,
       required bool scanDirectory,
     }) async {
+      if (scanner.isHiddenLibraryPath(
+        root,
+        isDirectory ? path : p.dirname(path),
+      )) {
+        return;
+      }
       if (isDirectory) {
         final treeChanged = _upsertLibraryFolder(root, path);
         final listingChanged = _upsertVisibleFolder(root, path);
