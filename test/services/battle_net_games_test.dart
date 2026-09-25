@@ -34,9 +34,13 @@ void main() {
       'wow_classic_era',
       'wow_anniversary',
       'wow_forever_beta',
+      'wow_forever',
       'diablo_iv',
       'diablo_iii',
       'starcraft_ii',
+      'heroes_of_the_storm',
+      'warcraft_iii_reforged',
+      'overwatch',
       'overwatch_2',
     });
   });
@@ -45,12 +49,16 @@ void main() {
     const expected = {
       'wow_retail': 'world-of-warcraft.png',
       'wow_classic': 'wow-classic.jpg',
-      'wow_classic_era': 'wow-classic.jpg',
+      'wow_classic_era': 'wow-classic-era.jpg',
       'wow_anniversary': 'wow-classic-anniversary.webp',
       'wow_forever_beta': 'wow-forever-beta.png',
+      'wow_forever': 'wow-forever.png',
       'diablo_iv': 'diablo-iv.png',
       'diablo_iii': null,
       'starcraft_ii': null,
+      'heroes_of_the_storm': 'heroes-of-the-storm.png',
+      'warcraft_iii_reforged': 'warcraft-iii-reforged.png',
+      'overwatch': 'overwatch.png',
       'overwatch_2': 'overwatch-2.png',
     };
     expect({
@@ -73,6 +81,7 @@ void main() {
       game('wow_forever_beta').albumName,
       'World of Warcraft - Forever (Beta)',
     );
+    expect(game('wow_forever').albumName, 'World of Warcraft - Forever');
   });
 
   test('World of Warcraft reads TGA and dates from the file name', () {
@@ -82,6 +91,7 @@ void main() {
       'wow_classic_era',
       'wow_anniversary',
       'wow_forever_beta',
+      'wow_forever',
     ]) {
       expect(game(id).extensions, contains('.tga'));
       expect(game(id).captureDate, BattleNetCaptureDate.fileName);
@@ -97,6 +107,7 @@ void main() {
       'wow_classic_era': '_classic_era_',
       'wow_anniversary': '_anniversary_',
       'wow_forever_beta': '_classic_beta_',
+      'wow_forever': '_forever_',
     };
     for (final entry in flavors.entries) {
       expect(locator().defaultPathsFor(game(entry.key)), [
@@ -111,6 +122,42 @@ void main() {
       ]);
       expect(locator(os: 'linux').defaultPathsFor(game(entry.key)), isEmpty);
     }
+  });
+
+  test('new game screenshot paths stay separate', () {
+    expect(
+      locator(os: 'windows').defaultPathsFor(game('heroes_of_the_storm')),
+      [p.join(home.path, 'Documents', 'Heroes of the Storm', 'Screenshots')],
+    );
+    expect(locator().defaultPathsFor(game('heroes_of_the_storm')), [
+      p.join(
+        home.path,
+        'Library',
+        'Application Support',
+        'Blizzard',
+        'Heroes of the Storm',
+        'Screenshots',
+      ),
+    ]);
+    for (final os in ['macos', 'windows']) {
+      expect(locator(os: os).defaultPathsFor(game('warcraft_iii_reforged')), [
+        p.join(home.path, 'Documents', 'Warcraft III', 'ScreenShots'),
+      ]);
+    }
+    expect(locator().defaultPathsFor(game('overwatch')), isEmpty);
+    expect(locator(os: 'windows').defaultPathsFor(game('overwatch')), [
+      p.join(
+        home.path,
+        'Documents',
+        'Overwatch',
+        'ScreenShots',
+        'GameClientApp',
+      ),
+    ]);
+    expect(
+      locator(os: 'windows').defaultPathsFor(game('overwatch')),
+      isNot(locator(os: 'windows').defaultPathsFor(game('overwatch_2'))),
+    );
   });
 
   test(

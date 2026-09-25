@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:gaming_memories/services/battle_net_games.dart';
 import 'package:gaming_memories/services/bundled_pc_covers.dart';
 import 'package:gaming_memories/sources/guild_wars_2_source.dart';
+import 'package:gaming_memories/sources/hytale_source.dart';
 import 'package:gaming_memories/sources/minecraft_source.dart';
 import 'package:path/path.dart' as p;
 
@@ -47,6 +48,22 @@ void main() {
         reason: assetName,
       );
     }
+  });
+
+  test('every bundled PC logo belongs to a source game', () {
+    final linked = {
+      ...battleNetGames.map((game) => game.coverAsset).whereType<String>(),
+      MinecraftSource.coverAsset,
+      GuildWars2Source.coverAsset,
+      p.basename(HytaleSource.coverAsset),
+    };
+    final assets = Directory('assets/covers/platforms/pc')
+        .listSync()
+        .whereType<File>()
+        .map((file) => p.basename(file.path))
+        .toSet();
+
+    expect(linked, assets);
   });
 
   test('writes the matching logo with its file extension', () async {

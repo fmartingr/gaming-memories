@@ -58,6 +58,9 @@ Supported PC sources add the matching bundled logo when they create a game album
 They keep an existing `cover.*` file. A cover switch controls the logo for
 sources that have one.
 
+Battle.net checks a separate screenshot folder for each listed game and version.
+Select a custom folder when automatic detection finds no screenshot folder.
+
 Each source's setup and behavior is described in the
 [documentation](https://fmartingr.github.io/gaming-memories/docs.html).
 

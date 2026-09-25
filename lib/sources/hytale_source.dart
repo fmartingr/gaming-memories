@@ -30,7 +30,7 @@ class HytaleSource
   static const gameName = 'Hytale';
   static const platform = 'PC';
   static const _extensions = {'.png', '.jpg', '.jpeg'};
-  static const _coverAsset = 'assets/covers/platforms/pc/hytale.png';
+  static const coverAsset = 'assets/covers/platforms/pc/hytale.png';
 
   @override
   String get name => gameName;
@@ -189,7 +189,7 @@ class HytaleSource
   }
 
   static Future<List<int>> _loadBundledCover() async {
-    final data = await rootBundle.load(_coverAsset);
+    final data = await rootBundle.load(coverAsset);
     return Uint8List.sublistView(data);
   }
 }

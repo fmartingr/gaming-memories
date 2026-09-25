@@ -136,7 +136,7 @@ final battleNetGames = <BattleNetGame>[
     name: 'World of Warcraft - Classic Era',
     albumName: 'World of Warcraft - Classic Era',
     flavor: '_classic_era_',
-    coverAsset: 'wow-classic.jpg',
+    coverAsset: 'wow-classic-era.jpg',
   ),
   _worldOfWarcraft(
     id: 'wow_anniversary',
@@ -151,6 +151,13 @@ final battleNetGames = <BattleNetGame>[
     albumName: 'World of Warcraft - Forever (Beta)',
     flavor: '_classic_beta_',
     coverAsset: 'wow-forever-beta.png',
+  ),
+  _worldOfWarcraft(
+    id: 'wow_forever',
+    name: 'World of Warcraft - Forever',
+    albumName: 'World of Warcraft - Forever',
+    flavor: '_forever_',
+    coverAsset: 'wow-forever.png',
   ),
   const BattleNetGame(
     id: 'diablo_iv',
@@ -206,6 +213,68 @@ final battleNetGames = <BattleNetGame>[
           'Documents',
           'StarCraft II',
           'Screenshots',
+        ]),
+      ],
+    },
+  ),
+  const BattleNetGame(
+    id: 'heroes_of_the_storm',
+    name: 'Heroes of the Storm',
+    albumName: 'Heroes of the Storm',
+    coverAsset: 'heroes-of-the-storm.png',
+    defaultPaths: {
+      'macos': [
+        BattleNetScreenshotPath.underHome([
+          'Library',
+          'Application Support',
+          'Blizzard',
+          'Heroes of the Storm',
+          'Screenshots',
+        ]),
+      ],
+      'windows': [
+        BattleNetScreenshotPath.underHome([
+          'Documents',
+          'Heroes of the Storm',
+          'Screenshots',
+        ]),
+      ],
+    },
+  ),
+  const BattleNetGame(
+    id: 'warcraft_iii_reforged',
+    name: 'Warcraft III: Reforged',
+    albumName: 'Warcraft III: Reforged',
+    coverAsset: 'warcraft-iii-reforged.png',
+    defaultPaths: {
+      'macos': [
+        BattleNetScreenshotPath.underHome([
+          'Documents',
+          'Warcraft III',
+          'ScreenShots',
+        ]),
+      ],
+      'windows': [
+        BattleNetScreenshotPath.underHome([
+          'Documents',
+          'Warcraft III',
+          'ScreenShots',
+        ]),
+      ],
+    },
+  ),
+  const BattleNetGame(
+    id: 'overwatch',
+    name: 'Overwatch',
+    albumName: 'Overwatch',
+    coverAsset: 'overwatch.png',
+    defaultPaths: {
+      'windows': [
+        BattleNetScreenshotPath.underHome([
+          'Documents',
+          'Overwatch',
+          'ScreenShots',
+          'GameClientApp',
         ]),
       ],
     },
