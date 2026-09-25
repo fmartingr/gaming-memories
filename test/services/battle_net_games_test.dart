@@ -32,6 +32,7 @@ void main() {
       'wow_retail',
       'wow_classic',
       'wow_classic_era',
+      'wow_anniversary',
       'wow_forever_beta',
       'diablo_iv',
       'diablo_iii',
@@ -42,9 +43,19 @@ void main() {
 
   test('each World of Warcraft flavour has its own album', () {
     expect(game('wow_retail').albumName, 'World of Warcraft');
-    expect(game('wow_classic').albumName, 'WoW Classic');
-    expect(game('wow_classic_era').albumName, 'WoW Classic Era');
-    expect(game('wow_forever_beta').albumName, 'WoW Forever Beta');
+    expect(game('wow_classic').albumName, 'World of Warcraft - Classic');
+    expect(
+      game('wow_classic_era').albumName,
+      'World of Warcraft - Classic Era',
+    );
+    expect(
+      game('wow_anniversary').albumName,
+      'World of Warcraft - Classic Anniversary',
+    );
+    expect(
+      game('wow_forever_beta').albumName,
+      'World of Warcraft - Forever (Beta)',
+    );
   });
 
   test('World of Warcraft reads TGA and dates from the file name', () {
@@ -52,6 +63,7 @@ void main() {
       'wow_retail',
       'wow_classic',
       'wow_classic_era',
+      'wow_anniversary',
       'wow_forever_beta',
     ]) {
       expect(game(id).extensions, contains('.tga'));
@@ -62,29 +74,26 @@ void main() {
   });
 
   test('resolves the World of Warcraft flavour folders', () {
-    expect(locator().defaultPathsFor(game('wow_retail')), [
-      '/Applications/World of Warcraft/_retail_/Screenshots',
-    ]);
-    expect(locator().defaultPathsFor(game('wow_classic_era')), [
-      '/Applications/World of Warcraft/_classic_era_/Screenshots',
-    ]);
-    expect(locator(os: 'windows').defaultPathsFor(game('wow_classic')), [
-      p.join(
-        r'C:\Program Files (x86)\World of Warcraft',
-        '_classic_',
-        'Screenshots',
-      ),
-    ]);
-    expect(locator().defaultPathsFor(game('wow_forever_beta')), [
-      '/Applications/World of Warcraft/_classic_beta_/Screenshots',
-    ]);
-    expect(locator(os: 'windows').defaultPathsFor(game('wow_forever_beta')), [
-      p.join(
-        r'C:\Program Files (x86)\World of Warcraft',
-        '_classic_beta_',
-        'Screenshots',
-      ),
-    ]);
+    const flavors = {
+      'wow_retail': '_retail_',
+      'wow_classic': '_classic_',
+      'wow_classic_era': '_classic_era_',
+      'wow_anniversary': '_anniversary_',
+      'wow_forever_beta': '_classic_beta_',
+    };
+    for (final entry in flavors.entries) {
+      expect(locator().defaultPathsFor(game(entry.key)), [
+        p.join('/Applications/World of Warcraft', entry.value, 'Screenshots'),
+      ]);
+      expect(locator(os: 'windows').defaultPathsFor(game(entry.key)), [
+        p.join(
+          r'C:\Program Files (x86)\World of Warcraft',
+          entry.value,
+          'Screenshots',
+        ),
+      ]);
+      expect(locator(os: 'linux').defaultPathsFor(game(entry.key)), isEmpty);
+    }
   });
 
   test(

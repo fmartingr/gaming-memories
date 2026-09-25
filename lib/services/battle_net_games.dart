@@ -119,20 +119,26 @@ final battleNetGames = <BattleNetGame>[
   ),
   _worldOfWarcraft(
     id: 'wow_classic',
-    name: 'WoW Classic',
-    albumName: 'WoW Classic',
+    name: 'World of Warcraft - Classic',
+    albumName: 'World of Warcraft - Classic',
     flavor: '_classic_',
   ),
   _worldOfWarcraft(
     id: 'wow_classic_era',
-    name: 'WoW Classic Era',
-    albumName: 'WoW Classic Era',
+    name: 'World of Warcraft - Classic Era',
+    albumName: 'World of Warcraft - Classic Era',
     flavor: '_classic_era_',
   ),
   _worldOfWarcraft(
+    id: 'wow_anniversary',
+    name: 'World of Warcraft - Classic Anniversary',
+    albumName: 'World of Warcraft - Classic Anniversary',
+    flavor: '_anniversary_',
+  ),
+  _worldOfWarcraft(
     id: 'wow_forever_beta',
-    name: 'WoW Forever Beta',
-    albumName: 'WoW Forever Beta',
+    name: 'World of Warcraft - Forever (Beta)',
+    albumName: 'World of Warcraft - Forever (Beta)',
     flavor: '_classic_beta_',
   ),
   const BattleNetGame(

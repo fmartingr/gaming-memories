@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 
 import '../models/app_settings.dart';
+import '../services/bundled_pc_covers.dart';
 import '../services/folder_access_service.dart';
 import '../services/library_scanner.dart';
 import '../services/media_importer.dart';
@@ -15,10 +16,12 @@ class MinecraftSource
   const MinecraftSource({
     this.importer = const MediaImporter(),
     this.sourcePaths = const SourcePathResolver(),
+    this.covers = const BundledPcCovers(),
   });
 
   final MediaImporter importer;
   final SourcePathResolver sourcePaths;
+  final BundledPcCovers covers;
 
   static const id = 'minecraft';
   static const gameName = 'Minecraft';
@@ -149,6 +152,7 @@ class MinecraftSource
         skipped++;
       }
     }
+    await covers.writeIfMissing(destination, gameName);
     onProgress?.call(
       SourceProgress(
         message: 'Processed Minecraft screenshots.',

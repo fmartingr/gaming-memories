@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import '../models/app_settings.dart';
 import '../services/app_log.dart';
 import '../services/battle_net_games.dart';
+import '../services/bundled_pc_covers.dart';
 import '../services/folder_access_service.dart';
 import '../services/library_scanner.dart';
 import '../services/media_importer.dart';
@@ -20,10 +21,12 @@ class BattleNetSource implements FolderBackedScreenshotSource {
   const BattleNetSource({
     this.importer = const MediaImporter(),
     this.locator = const BattleNetLocator(),
+    this.covers = const BundledPcCovers(),
   });
 
   final MediaImporter importer;
   final BattleNetLocator locator;
+  final BundledPcCovers covers;
 
   static const id = 'battle_net';
   static const sourceName = 'Battle.net';
@@ -150,6 +153,15 @@ class BattleNetSource implements FolderBackedScreenshotSource {
       } else {
         skipped++;
       }
+    }
+
+    for (final folder in folders) {
+      await covers.writeIfMissing(
+        Directory(
+          p.join(expandUserPath(outputPath), platform, folder.game.albumName),
+        ),
+        folder.game.albumName,
+      );
     }
 
     onProgress?.call(

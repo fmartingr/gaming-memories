@@ -8,6 +8,8 @@ import 'package:image/image.dart' as image;
 import 'package:path/path.dart' as p;
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late Directory home;
   late Directory output;
 
@@ -60,7 +62,13 @@ void main() {
         p.join(wowFlavor('_classic_'), 'WoWScrnShot_092126_122334.png'),
       );
       await writeShot(
+        p.join(wowFlavor('_classic_era_'), 'WoWScrnShot_092126_122335.jpg'),
+      );
+      await writeShot(
         p.join(wowFlavor('_classic_beta_'), 'WoWScrnShot_092226_132435.jpg'),
+      );
+      await writeShot(
+        p.join(wowFlavor('_anniversary_'), 'WoWScrnShot_092326_142536.jpg'),
       );
       await writeShot(
         p.join(documents(['Diablo III', 'Screenshots']), 'd3.jpg'),
@@ -77,11 +85,13 @@ void main() {
 
       final result = await source().collect(settings());
 
-      expect(result.imported, 6);
+      expect(result.imported, 8);
       for (final relative in [
         ['World of Warcraft', '2026-09-20_11-22-33.jpg'],
-        ['WoW Classic', '2026-09-21_12-23-34.png'],
-        ['WoW Forever Beta', '2026-09-22_13-24-35.jpg'],
+        ['World of Warcraft - Classic', '2026-09-21_12-23-34.png'],
+        ['World of Warcraft - Classic Era', '2026-09-21_12-23-35.jpg'],
+        ['World of Warcraft - Forever (Beta)', '2026-09-22_13-24-35.jpg'],
+        ['World of Warcraft - Classic Anniversary', '2026-09-23_14-25-36.jpg'],
         ['Diablo III', '2026-09-23_14-25-36.jpg'],
         ['StarCraft II', '2026-09-24_15-26-37.png'],
         ['Overwatch 2', '2026-09-25_16-27-38.jpg'],
@@ -90,6 +100,20 @@ void main() {
           File(p.joinAll([output.path, 'PC', ...relative])).existsSync(),
           isTrue,
           reason: relative.join('/'),
+        );
+      }
+      for (final cover in {
+        'World of Warcraft': 'cover.png',
+        'World of Warcraft - Classic': 'cover.jpg',
+        'World of Warcraft - Classic Era': 'cover.jpg',
+        'World of Warcraft - Classic Anniversary': 'cover.webp',
+        'World of Warcraft - Forever (Beta)': 'cover.png',
+        'Overwatch 2': 'cover.png',
+      }.entries) {
+        expect(
+          File(p.join(output.path, 'PC', cover.key, cover.value)).existsSync(),
+          isTrue,
+          reason: cover.key,
         );
       }
     },

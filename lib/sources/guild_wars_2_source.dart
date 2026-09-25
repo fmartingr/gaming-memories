@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 
 import '../models/app_settings.dart';
+import '../services/bundled_pc_covers.dart';
 import '../services/library_scanner.dart';
 import '../services/media_importer.dart';
 import '../services/folder_access_service.dart';
@@ -12,9 +13,13 @@ import 'screenshot_source.dart';
 class GuildWars2Source
     with SingleFolderRequirement
     implements FolderBackedScreenshotSource {
-  const GuildWars2Source({this.importer = const MediaImporter()});
+  const GuildWars2Source({
+    this.importer = const MediaImporter(),
+    this.covers = const BundledPcCovers(),
+  });
 
   final MediaImporter importer;
+  final BundledPcCovers covers;
 
   static const id = 'guild_wars_2';
   static const gameName = 'Guild Wars 2';
@@ -134,6 +139,8 @@ class GuildWars2Source
         skipped++;
       }
     }
+
+    await covers.writeIfMissing(destination, gameName);
 
     onProgress?.call(
       SourceProgress(
