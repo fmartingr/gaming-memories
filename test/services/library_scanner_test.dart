@@ -92,6 +92,104 @@ void main() {
     expect(subAlbums.single.relativePath, 'Boss fights');
   });
 
+  test('skips dot-prefixed folders at every album depth', () async {
+    final output = await Directory.systemTemp.createTemp('gaming-memories-');
+    addTearDown(() => output.delete(recursive: true));
+    final visibleGame = Directory(p.join(output.path, 'PC', 'Game'));
+    final visibleSubAlbum = Directory(p.join(visibleGame.path, 'Visible'));
+    final hiddenSubAlbum = Directory(p.join(visibleGame.path, '.private'));
+    final hiddenGame = Directory(p.join(output.path, 'PC', '.hidden-game'));
+    final hiddenPlatform = Directory(
+      p.join(output.path, '.hidden-platform', 'Game'),
+    );
+    for (final directory in [
+      visibleSubAlbum,
+      hiddenSubAlbum,
+      hiddenGame,
+      hiddenPlatform,
+    ]) {
+      await directory.create(recursive: true);
+      await File(p.join(directory.path, 'capture.jpg')).writeAsBytes([1]);
+    }
+    final scanner = LibraryScanner(
+      thumbnailService: const _FakeThumbnailService(),
+    );
+
+    final tree = await scanner.folderTree(output.path);
+    expect(tree.map((folder) => folder.name), ['PC']);
+    expect(tree.single.children.map((folder) => folder.name), ['Game']);
+    expect(
+      (await scanner.subAlbumTree(
+        output.path,
+        'PC',
+        'Game',
+      )).map((folder) => folder.name),
+      ['Visible'],
+    );
+    expect(
+      (await scanner.folderContents(
+        output.path,
+        'PC',
+        'Game',
+      )).folders.map((folder) => folder.name),
+      ['Visible'],
+    );
+    final library = await scanner.scan(output.path);
+    expect(library.albums, hasLength(1));
+    expect(library.timeline.map((item) => item.subAlbumPath), ['Visible']);
+    expect(
+      (await scanner.mediaTree(
+        output.path,
+        'PC',
+        'Game',
+      )).map((item) => item.subAlbumPath),
+      ['Visible'],
+    );
+  });
+
+  test('scans a library inside a hidden folder', () async {
+    final output = await Directory.systemTemp.createTemp('gaming-memories-');
+    addTearDown(() => output.delete(recursive: true));
+    final library = p.join(output.path, '.captures');
+    final game = Directory(p.join(library, 'PC', 'Game'));
+    await game.create(recursive: true);
+    await File(p.join(game.path, 'capture.jpg')).writeAsBytes([1]);
+    final scanner = LibraryScanner(
+      thumbnailService: const _FakeThumbnailService(),
+    );
+
+    expect((await scanner.folderTree(library)).single.children, hasLength(1));
+    expect(
+      (await scanner.folderContents(library, 'PC', 'Game')).media,
+      hasLength(1),
+    );
+  });
+
+  test('skips folders with the Windows hidden attribute', () async {
+    final output = await Directory.systemTemp.createTemp('gaming-memories-');
+    addTearDown(() => output.delete(recursive: true));
+    final visibleGame = Directory(p.join(output.path, 'PC', 'Game'));
+    final hiddenGame = Directory(p.join(output.path, 'PC', 'Hidden game'));
+    final hiddenSubAlbum = Directory(p.join(visibleGame.path, 'Hidden album'));
+    await hiddenGame.create(recursive: true);
+    await hiddenSubAlbum.create(recursive: true);
+    for (final directory in [hiddenGame, hiddenSubAlbum]) {
+      final result = await Process.run('attrib', ['+H', directory.path, '/D']);
+      expect(result.exitCode, 0);
+    }
+    final scanner = const LibraryScanner();
+
+    expect(
+      (await scanner.folderTree(output.path)).single.children,
+      hasLength(1),
+    );
+    expect(await scanner.subAlbumTree(output.path, 'PC', 'Game'), isEmpty);
+    expect(
+      (await scanner.folderContents(output.path, 'PC', 'Game')).folders,
+      isEmpty,
+    );
+  }, skip: !Platform.isWindows);
+
   test('lists only direct folders and media for an open game', () async {
     final output = await Directory.systemTemp.createTemp('gaming-memories-');
     addTearDown(() => output.delete(recursive: true));

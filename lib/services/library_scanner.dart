@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:ffi/ffi.dart';
 import 'package:path/path.dart' as p;
+import 'package:win32/win32.dart';
 
 import '../models/library.dart';
 import 'capture_date.dart';
@@ -165,7 +167,7 @@ class LibraryScanner {
     final media = <MediaItem>[];
     try {
       await for (final entity in directory.list(followLinks: false)) {
-        if (entity is Directory) {
+        if (entity is Directory && !_isHiddenDirectory(entity.path)) {
           folders.add(
             LibraryFolder(
               name: p.basename(entity.path),
@@ -323,6 +325,23 @@ class LibraryScanner {
 
   bool supportsMediaPath(String path) => _isMedia(path);
 
+  /// Excludes hidden folders below the selected library root.
+  bool isHiddenLibraryPath(String rootPath, String directoryPath) {
+    final root = p.normalize(p.absolute(rootPath));
+    final normalized = p.normalize(p.absolute(directoryPath));
+    if (!p.isWithin(root, normalized)) {
+      return false;
+    }
+    var directory = root;
+    for (final part in p.split(p.relative(normalized, from: root))) {
+      directory = p.join(directory, part);
+      if (_isHiddenDirectory(directory)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   bool isCoverPath(String path) => _isCover(path);
 
   Future<MediaItem> _listedMediaItem(
@@ -393,7 +412,9 @@ class LibraryScanner {
     try {
       final directories = await parent
           .list(followLinks: false)
-          .where((entity) => entity is Directory)
+          .where(
+            (entity) => entity is Directory && !_isHiddenDirectory(entity.path),
+          )
           .cast<Directory>()
           .toList();
       directories.sort((left, right) => left.path.compareTo(right.path));
@@ -401,6 +422,20 @@ class LibraryScanner {
     } on FileSystemException {
       return const [];
     }
+  }
+
+  bool _isHiddenDirectory(String path) {
+    if (p.basename(path).startsWith('.')) {
+      return true;
+    }
+    if (!Platform.isWindows) {
+      return false;
+    }
+    return using((arena) {
+      final attributes = GetFileAttributes(arena.pcwstr(path)).value;
+      return attributes != 0xffffffff &&
+          (attributes & FILE_ATTRIBUTE_HIDDEN) != 0;
+    });
   }
 
   Future<SubAlbum?> _subAlbum(
