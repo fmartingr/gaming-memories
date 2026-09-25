@@ -26,7 +26,8 @@ class GalleryTemplate {
     buffer.writeln('<head>');
     buffer.writeln('<meta charset="UTF-8" />');
     buffer.writeln(
-      '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
+      '<meta name="viewport" content="width=device-width, initial-scale=1.0, '
+      'maximum-scale=1.0, user-scalable=no" />',
     );
     buffer.writeln('<title>${_escape(_pageTitle(title))}</title>');
     buffer.writeln(
@@ -324,6 +325,10 @@ class GalleryTemplate {
 
 html { -webkit-text-size-adjust: 100%; }
 
+@media (any-pointer: coarse) {
+  html { touch-action: pan-x pan-y; }
+}
+
 body {
   margin: 0;
   background: var(--bg);
@@ -613,6 +618,7 @@ footer p { margin: 5px 0; }
   position: fixed;
   inset: 0;
   z-index: 999;
+  overflow: hidden;
   padding: 24px;
   background: rgba(0, 0, 0, .92);
   backdrop-filter: blur(8px);
@@ -636,11 +642,14 @@ footer p { margin: 5px 0; }
 }
 
 .lightbox img, .lightbox video {
+  display: block;
   max-width: 92vw;
   max-height: 82vh;
   border-radius: var(--radius);
   object-fit: contain;
 }
+
+.lightbox img { touch-action: none; user-select: none; -webkit-user-drag: none; }
 
 .lightbox .close, .lightbox .nav {
   position: absolute;
@@ -715,8 +724,60 @@ document.addEventListener('DOMContentLoaded', () => {
   const gallery = document.querySelector('.gallery.files');
   let currentIndex = 0;
   let items = [];
-  let touchStartX = 0;
-  let touchEndX = 0;
+  let touchStartX = null;
+  let scale = 1;
+  let offsetX = 0;
+  let offsetY = 0;
+  let pinchStart = null;
+  let panStart = null;
+  // The image's centre on screen without the zoom transform.
+  let centre = null;
+
+  if (window.matchMedia('(any-pointer: coarse)').matches) {
+    document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive: false });
+  }
+
+  function endGesture() {
+    pinchStart = null;
+    panStart = null;
+    touchStartX = null;
+  }
+
+  function resetZoom() {
+    scale = 1;
+    offsetX = 0;
+    offsetY = 0;
+    endGesture();
+  }
+
+  // A zoomed image wider than the screen always covers it; a narrower one
+  // stays inside it.
+  function clampOffset(offset, size, centre, screen) {
+    const a = size / 2 - centre;
+    const b = screen - size / 2 - centre;
+    return Math.max(Math.min(a, b), Math.min(Math.max(a, b), offset));
+  }
+
+  function updateZoom(image) {
+    if (scale === 1) {
+      offsetX = 0;
+      offsetY = 0;
+    } else {
+      offsetX = clampOffset(offsetX, image.clientWidth * scale, centre.x, window.innerWidth);
+      offsetY = clampOffset(offsetY, image.clientHeight * scale, centre.y, window.innerHeight);
+    }
+    image.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+  }
+
+  function pinch(touches) {
+    const a = touches[0];
+    const b = touches[1];
+    return {
+      distance: Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY),
+      x: (a.clientX + b.clientX) / 2,
+      y: (a.clientY + b.clientY) / 2,
+    };
+  }
 
   function updateItems() {
     items = Array.from(
@@ -734,6 +795,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const path = item.href;
     const isVideo = item.querySelector('.video') !== null;
 
+    resetZoom();
     contentWrapper.innerHTML = '';
     const media = document.createElement(isVideo ? 'video' : 'img');
     media.src = path;
@@ -780,6 +842,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function closeLightbox() {
     lightbox.classList.remove('active');
+    resetZoom();
     caption.textContent = '';
     const video = contentWrapper.querySelector('video');
     if (video) {
@@ -857,12 +920,38 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   contentWrapper.addEventListener('touchstart', (e) => {
-    touchStartX = e.changedTouches[0].screenX;
+    const image = contentWrapper.querySelector('img');
+    if (image) {
+      const rect = image.getBoundingClientRect();
+      centre = {
+        x: rect.left + rect.width / 2 - offsetX,
+        y: rect.top + rect.height / 2 - offsetY,
+      };
+    }
+    if (image && e.touches.length === 2) {
+      const start = pinch(e.touches);
+      pinchStart = {
+        distance: start.distance, scale,
+        px: start.x - centre.x - offsetX,
+        py: start.y - centre.y - offsetY,
+      };
+      panStart = null;
+    } else if (scale > 1 && e.touches.length === 1) {
+      panStart = { x: e.touches[0].clientX, y: e.touches[0].clientY, offsetX, offsetY };
+    }
+    touchStartX = e.touches.length === 1 && scale === 1 ? e.touches[0].clientX : null;
   }, false);
 
   contentWrapper.addEventListener('touchend', (e) => {
-    touchEndX = e.changedTouches[0].screenX;
-    const diff = touchStartX - touchEndX;
+    if (e.touches.length === 1 && scale > 1) {
+      panStart = { x: e.touches[0].clientX, y: e.touches[0].clientY, offsetX, offsetY };
+      return;
+    }
+    if (e.touches.length) return;
+    const startX = touchStartX;
+    endGesture();
+    if (startX === null) return;
+    const diff = startX - e.changedTouches[0].clientX;
     if (items.length > 0 && Math.abs(diff) > 50) {
       showLightbox((currentIndex + (diff > 0 ? 1 : -1) + items.length) % items.length);
     }
@@ -870,7 +959,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   contentWrapper.addEventListener('touchmove', (e) => {
     e.preventDefault();
+    const image = contentWrapper.querySelector('img');
+    if (!image) return;
+    if (e.touches.length === 2 && pinchStart && pinchStart.distance > 0) {
+      const now = pinch(e.touches);
+      scale = Math.max(1, Math.min(4, pinchStart.scale * now.distance / pinchStart.distance));
+      const ratio = scale / pinchStart.scale;
+      offsetX = now.x - centre.x - ratio * pinchStart.px;
+      offsetY = now.y - centre.y - ratio * pinchStart.py;
+      updateZoom(image);
+    } else if (panStart) {
+      offsetX = panStart.offsetX + e.touches[0].clientX - panStart.x;
+      offsetY = panStart.offsetY + e.touches[0].clientY - panStart.y;
+      updateZoom(image);
+    }
   }, { passive: false });
+
+  contentWrapper.addEventListener('touchcancel', endGesture);
 
   const sortButtons = document.querySelectorAll('.sort-btn');
   let currentSort = 'desc';

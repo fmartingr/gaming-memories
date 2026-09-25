@@ -179,10 +179,12 @@ then appears in the sidebar, above **Settings**.
 
 Each album becomes one page, with folder tiles, a screenshot and clip filter, a
 sort toggle, a light and dark theme that follows the reader's system setting,
-and a lightbox with keyboard, click and swipe navigation. The lightbox fetches
-the screenshots on either side of the open one, so the next one shows at once;
-clips are not fetched ahead. The pages
-are written to a folder of the app's own, so nothing is ever written between
+and a lightbox with keyboard, click and swipe navigation. On mobile, the pages
+stay at their normal size. Pinch an image in the lightbox to zoom it. Drag the
+image to see more. Clips keep their normal playback controls. The lightbox
+fetches the screenshots beside the open one. The next screenshot appears at
+once. The lightbox does not fetch clips in advance. The pages are written to a
+folder of the app's own, so nothing is ever written between
 your captures. The upload merges the two: captures and their thumbnails from the
 library first, then the pages from that folder, so a page never arrives before
 the media it links to. While a publish runs the sidebar shows its progress and
