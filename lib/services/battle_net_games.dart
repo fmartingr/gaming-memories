@@ -6,9 +6,11 @@ import 'library_scanner.dart';
 
 /// Where a game's capture time comes from.
 enum BattleNetCaptureDate {
-  /// Parsed out of the file name, which is the only reliable source for games
-  /// that rewrite the modification time when the file is copied.
+  /// Parsed from a World of Warcraft screenshot file name.
   fileName,
+
+  /// Parsed from a Warcraft III screenshot file name.
+  warcraftIIIFileName,
 
   /// The file's modification time.
   modified,
@@ -48,6 +50,7 @@ class BattleNetGame {
     required this.name,
     required this.albumName,
     required this.defaultPaths,
+    this.coverAsset,
     this.extensions = defaultExtensions,
     this.captureDate = BattleNetCaptureDate.modified,
   });
@@ -63,6 +66,9 @@ class BattleNetGame {
 
   /// The album it imports into, under the `PC` platform folder.
   final String albumName;
+
+  /// Bundled logo filename for this game's album, when one is available.
+  final String? coverAsset;
 
   /// Candidate folders per operating system. A game absent from this map has
   /// no client on that platform and can still be pointed at a custom folder.
@@ -86,11 +92,13 @@ BattleNetGame _worldOfWarcraft({
   required String name,
   required String albumName,
   required String flavor,
+  required String coverAsset,
 }) {
   return BattleNetGame(
     id: id,
     name: name,
     albumName: albumName,
+    coverAsset: coverAsset,
     defaultPaths: {
       'macos': [
         BattleNetScreenshotPath.absolute(_wowMacOSInstall, [
@@ -116,23 +124,48 @@ final battleNetGames = <BattleNetGame>[
     name: 'World of Warcraft',
     albumName: 'World of Warcraft',
     flavor: '_retail_',
+    coverAsset: 'world-of-warcraft.png',
   ),
   _worldOfWarcraft(
     id: 'wow_classic',
-    name: 'WoW Classic',
-    albumName: 'WoW Classic',
+    name: 'World of Warcraft - Classic',
+    albumName: 'World of Warcraft - Classic',
     flavor: '_classic_',
+    coverAsset: 'wow-classic.jpg',
   ),
   _worldOfWarcraft(
     id: 'wow_classic_era',
-    name: 'WoW Classic Era',
-    albumName: 'WoW Classic Era',
+    name: 'World of Warcraft - Classic Era',
+    albumName: 'World of Warcraft - Classic Era',
     flavor: '_classic_era_',
+    coverAsset: 'wow-classic.jpg',
+  ),
+  _worldOfWarcraft(
+    id: 'wow_anniversary',
+    name: 'World of Warcraft - Classic Anniversary',
+    albumName: 'World of Warcraft - Classic Anniversary',
+    flavor: '_anniversary_',
+    coverAsset: 'wow-classic-anniversary.webp',
+  ),
+  _worldOfWarcraft(
+    id: 'wow_forever_beta',
+    name: 'World of Warcraft - Forever (Beta)',
+    albumName: 'World of Warcraft - Forever (Beta)',
+    flavor: '_classic_beta_',
+    coverAsset: 'wow-forever-beta.png',
+  ),
+  _worldOfWarcraft(
+    id: 'wow_forever',
+    name: 'World of Warcraft - Forever',
+    albumName: 'World of Warcraft - Forever',
+    flavor: '_forever_',
+    coverAsset: 'wow-forever.png',
   ),
   const BattleNetGame(
     id: 'diablo_iv',
     name: 'Diablo IV',
     albumName: 'Diablo IV',
+    coverAsset: 'diablo-iv.png',
     defaultPaths: {
       'windows': [
         BattleNetScreenshotPath.underHome(['Pictures', 'Diablo IV']),
@@ -187,9 +220,73 @@ final battleNetGames = <BattleNetGame>[
     },
   ),
   const BattleNetGame(
+    id: 'heroes_of_the_storm',
+    name: 'Heroes of the Storm',
+    albumName: 'Heroes of the Storm',
+    coverAsset: 'heroes-of-the-storm.png',
+    defaultPaths: {
+      'macos': [
+        BattleNetScreenshotPath.underHome([
+          'Library',
+          'Application Support',
+          'Blizzard',
+          'Heroes of the Storm',
+          'Screenshots',
+        ]),
+      ],
+      'windows': [
+        BattleNetScreenshotPath.underHome([
+          'Documents',
+          'Heroes of the Storm',
+          'Screenshots',
+        ]),
+      ],
+    },
+  ),
+  const BattleNetGame(
+    id: 'warcraft_iii_reforged',
+    name: 'Warcraft III: Reforged',
+    albumName: 'Warcraft III - Reforged',
+    coverAsset: 'warcraft-iii-reforged.png',
+    captureDate: BattleNetCaptureDate.warcraftIIIFileName,
+    defaultPaths: {
+      'macos': [
+        BattleNetScreenshotPath.underHome([
+          'Documents',
+          'Warcraft III',
+          'ScreenShots',
+        ]),
+      ],
+      'windows': [
+        BattleNetScreenshotPath.underHome([
+          'Documents',
+          'Warcraft III',
+          'ScreenShots',
+        ]),
+      ],
+    },
+  ),
+  const BattleNetGame(
+    id: 'overwatch',
+    name: 'Overwatch',
+    albumName: 'Overwatch',
+    coverAsset: 'overwatch.png',
+    defaultPaths: {
+      'windows': [
+        BattleNetScreenshotPath.underHome([
+          'Documents',
+          'Overwatch',
+          'ScreenShots',
+          'GameClientApp',
+        ]),
+      ],
+    },
+  ),
+  const BattleNetGame(
     id: 'overwatch_2',
     name: 'Overwatch 2',
     albumName: 'Overwatch 2',
+    coverAsset: 'overwatch-2.png',
     defaultPaths: {
       'macos': [
         BattleNetScreenshotPath.underHome([

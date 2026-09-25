@@ -6,6 +6,8 @@ import 'package:path/path.dart' as p;
 import '../models/app_settings.dart';
 import '../services/app_log.dart';
 import '../services/battle_net_games.dart';
+import '../services/bundled_pc_covers.dart';
+import '../services/capture_date.dart';
 import '../services/folder_access_service.dart';
 import '../services/library_scanner.dart';
 import '../services/media_importer.dart';
@@ -127,6 +129,7 @@ class BattleNetSource implements FolderBackedScreenshotSource {
     }
     media.sort((left, right) => left.file.path.compareTo(right.file.path));
 
+    final library = p.join(expandUserPath(outputPath), platform);
     var imported = 0;
     var skipped = 0;
     for (var index = 0; index < media.length; index++) {
@@ -139,17 +142,20 @@ class BattleNetSource implements FolderBackedScreenshotSource {
         ),
       );
       final destination = Directory(
-        p.join(
-          expandUserPath(outputPath),
-          platform,
-          item.folder.game.albumName,
-        ),
+        p.join(library, item.folder.game.albumName),
       );
       if (await _copy(item, destination) == true) {
         imported++;
       } else {
         skipped++;
       }
+    }
+
+    for (final folder in folders) {
+      await writeBundledCoverIfMissing(
+        Directory(p.join(library, folder.game.albumName)),
+        folder.game.coverAsset,
+      );
     }
 
     onProgress?.call(
@@ -188,16 +194,22 @@ class BattleNetSource implements FolderBackedScreenshotSource {
     final game = media.folder.game;
     final file = media.file;
 
-    DateTime? capturedAt;
-    if (game.captureDate == BattleNetCaptureDate.fileName) {
-      capturedAt = parseWorldOfWarcraftScreenshotDate(p.basename(file.path));
-      if (capturedAt == null) {
-        diagnosticLog.warning(
-          'Battle.net skipped "${file.path}": its ${game.name} filename has no valid capture date.',
-          category: 'source',
-        );
-        return null;
-      }
+    final capturedAt = switch (game.captureDate) {
+      BattleNetCaptureDate.modified => null,
+      BattleNetCaptureDate.fileName => parseWorldOfWarcraftScreenshotDate(
+        p.basename(file.path),
+      ),
+      BattleNetCaptureDate.warcraftIIIFileName => capturedAtFromName(
+        p.basename(file.path),
+      ),
+    };
+    if (game.captureDate != BattleNetCaptureDate.modified &&
+        capturedAt == null) {
+      diagnosticLog.warning(
+        'Battle.net skipped "${file.path}": its ${game.name} filename has no valid capture date.',
+        category: 'source',
+      );
+      return null;
     }
 
     if (p.extension(file.path).toLowerCase() == '.tga') {

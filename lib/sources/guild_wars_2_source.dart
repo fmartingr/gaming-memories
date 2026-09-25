@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 
 import '../models/app_settings.dart';
+import '../services/bundled_pc_covers.dart';
 import '../services/library_scanner.dart';
 import '../services/media_importer.dart';
 import '../services/folder_access_service.dart';
@@ -18,6 +19,7 @@ class GuildWars2Source
 
   static const id = 'guild_wars_2';
   static const gameName = 'Guild Wars 2';
+  static const coverAsset = 'guild-wars-2.jpg';
   static const platform = 'PC';
 
   @override
@@ -134,6 +136,8 @@ class GuildWars2Source
         skipped++;
       }
     }
+
+    await writeBundledCoverIfMissing(destination, coverAsset);
 
     onProgress?.call(
       SourceProgress(

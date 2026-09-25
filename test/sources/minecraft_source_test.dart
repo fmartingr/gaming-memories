@@ -7,6 +7,8 @@ import 'package:gaming_memories/sources/minecraft_source.dart';
 import 'package:path/path.dart' as p;
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late Directory source;
   late Directory output;
 
@@ -56,6 +58,11 @@ void main() {
     expect(result.skipped, 0);
     expect(File(p.join(album, '2026-09-01_10-11-12.png')).existsSync(), isTrue);
     expect(File(p.join(album, '2026-09-02_13-14-15.png')).existsSync(), isTrue);
+    expect(
+      File(p.join(album, 'cover.png')).readAsBytesSync(),
+      File(p.join('assets/covers/platforms/pc', MinecraftSource.coverAsset))
+          .readAsBytesSync(),
+    );
   });
 
   test('imports launcher and Flatpak automatic folders', () async {

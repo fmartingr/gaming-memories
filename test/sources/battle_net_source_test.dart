@@ -8,6 +8,8 @@ import 'package:image/image.dart' as image;
 import 'package:path/path.dart' as p;
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late Directory home;
   late Directory output;
 
@@ -60,6 +62,18 @@ void main() {
         p.join(wowFlavor('_classic_'), 'WoWScrnShot_092126_122334.png'),
       );
       await writeShot(
+        p.join(wowFlavor('_classic_era_'), 'WoWScrnShot_092126_122335.jpg'),
+      );
+      await writeShot(
+        p.join(wowFlavor('_classic_beta_'), 'WoWScrnShot_092226_132435.jpg'),
+      );
+      await writeShot(
+        p.join(wowFlavor('_anniversary_'), 'WoWScrnShot_092326_142536.jpg'),
+      );
+      await writeShot(
+        p.join(wowFlavor('_forever_'), 'WoWScrnShot_092426_152637.jpg'),
+      );
+      await writeShot(
         p.join(documents(['Diablo III', 'Screenshots']), 'd3.jpg'),
         modified: DateTime(2026, 9, 23, 14, 25, 36),
       );
@@ -71,13 +85,54 @@ void main() {
         p.join(documents(['Overwatch', 'ScreenShots', 'Overwatch']), 'ow.jpg'),
         modified: DateTime(2026, 9, 25, 16, 27, 38),
       );
+      await writeShot(
+        p.join(
+          home.path,
+          'Library',
+          'Application Support',
+          'Blizzard',
+          'Heroes of the Storm',
+          'Screenshots',
+          'hero.jpg',
+        ),
+        modified: DateTime(2026, 9, 18, 9, 10, 11),
+      );
+      await writeShot(
+        p.join(
+          documents(['Warcraft III', 'ScreenShots']),
+          'WC3ScrnShot_092526_173407_000.png',
+        ),
+        modified: DateTime(2026, 9, 25, 17, 34, 8),
+      );
+      final legacyOverwatch = p.join(home.path, 'legacy-overwatch');
+      await writeShot(
+        p.join(legacyOverwatch, 'old.jpg'),
+        modified: DateTime(2026, 9, 17, 8, 9, 10),
+      );
 
-      final result = await source().collect(settings());
+      final result = await source().collect(
+        settings(
+          games: {
+            'overwatch': SourceSettings(
+              enabled: true,
+              useCustomPath: true,
+              sourcePath: legacyOverwatch,
+            ),
+          },
+        ),
+      );
 
-      expect(result.imported, 5);
+      expect(result.imported, 12);
       for (final relative in [
+        ['Overwatch', '2026-09-17_08-09-10.jpg'],
+        ['Heroes of the Storm', '2026-09-18_09-10-11.jpg'],
+        ['Warcraft III - Reforged', '2026-09-25_17-34-07.png'],
         ['World of Warcraft', '2026-09-20_11-22-33.jpg'],
-        ['WoW Classic', '2026-09-21_12-23-34.png'],
+        ['World of Warcraft - Classic', '2026-09-21_12-23-34.png'],
+        ['World of Warcraft - Classic Era', '2026-09-21_12-23-35.jpg'],
+        ['World of Warcraft - Forever (Beta)', '2026-09-22_13-24-35.jpg'],
+        ['World of Warcraft - Classic Anniversary', '2026-09-23_14-25-36.jpg'],
+        ['World of Warcraft - Forever', '2026-09-24_15-26-37.jpg'],
         ['Diablo III', '2026-09-23_14-25-36.jpg'],
         ['StarCraft II', '2026-09-24_15-26-37.png'],
         ['Overwatch 2', '2026-09-25_16-27-38.jpg'],
@@ -86,6 +141,34 @@ void main() {
           File(p.joinAll([output.path, 'PC', ...relative])).existsSync(),
           isTrue,
           reason: relative.join('/'),
+        );
+      }
+      for (final cover in {
+        'World of Warcraft': 'world-of-warcraft.png',
+        'World of Warcraft - Classic': 'wow-classic.jpg',
+        'World of Warcraft - Classic Era': 'wow-classic.jpg',
+        'World of Warcraft - Classic Anniversary':
+            'wow-classic-anniversary.webp',
+        'World of Warcraft - Forever (Beta)': 'wow-forever-beta.png',
+        'World of Warcraft - Forever': 'wow-forever.png',
+        'Heroes of the Storm': 'heroes-of-the-storm.png',
+        'Warcraft III - Reforged': 'warcraft-iii-reforged.png',
+        'Overwatch': 'overwatch.png',
+        'Overwatch 2': 'overwatch-2.png',
+      }.entries) {
+        final actual = File(
+          p.join(
+            output.path,
+            'PC',
+            cover.key,
+            'cover${p.extension(cover.value)}',
+          ),
+        );
+        expect(
+          actual.readAsBytesSync(),
+          File(p.join('assets/covers/platforms/pc', cover.value))
+              .readAsBytesSync(),
+          reason: cover.key,
         );
       }
     },
@@ -117,6 +200,17 @@ void main() {
 
   test('skips a World of Warcraft file with no date in its name', () async {
     await writeShot(p.join(wowFlavor('_retail_'), 'invalid.jpg'));
+
+    final result = await source().collect(settings());
+
+    expect(result.imported, 0);
+    expect(result.skipped, 1);
+  });
+
+  test('skips a Warcraft III file with no date in its name', () async {
+    await writeShot(
+      p.join(documents(['Warcraft III', 'ScreenShots']), 'invalid.png'),
+    );
 
     final result = await source().collect(settings());
 

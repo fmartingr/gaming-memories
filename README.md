@@ -46,7 +46,7 @@ platform and game, or open a capture for a closer look without leaving the app.
 
 | Source | Collected from | Extra setup |
 | --- | --- | --- |
-| **Battle.net** | Installed Diablo IV and World of Warcraft capture folders | None |
+| **Battle.net** | Game screenshot folders, with a separate album for each version | Select game folders on Linux |
 | **Guild Wars 2** | Game screenshot folder | None |
 | **Hytale** | `Pictures/Hytale Screenshots` | None |
 | **Minecraft** | Launcher screenshot folders, including supported Linux Flatpak layouts | None |
@@ -55,6 +55,14 @@ platform and game, or open a capture for a closer look without leaving the app.
 | **PlayStation 4** | Folder exported from the console | None |
 | **PlayStation 5** | Folder exported from the console | FFprobe recommended for clip dates |
 | **Steam** | Local screenshots and the optional online gallery | Steam Web API key; SteamID64 for online imports |
+
+Supported PC sources add the matching bundled logo when they create a game album.
+They keep an existing `cover.*` file. A cover switch controls the logo for
+sources that have one.
+
+Battle.net checks a separate screenshot folder for each listed game and version.
+Select a custom folder when automatic detection finds no screenshot folder.
+The source uses dates from supported screenshot filenames. It uses file dates for other games.
 
 Each source's setup and behavior is described in the
 [documentation](https://fmartingr.github.io/gaming-memories/docs.html).

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 
 import '../models/app_settings.dart';
+import '../services/bundled_pc_covers.dart';
 import '../services/folder_access_service.dart';
 import '../services/library_scanner.dart';
 import '../services/media_importer.dart';
@@ -22,6 +23,7 @@ class MinecraftSource
 
   static const id = 'minecraft';
   static const gameName = 'Minecraft';
+  static const coverAsset = 'minecraft.png';
   static const platform = 'PC';
 
   @override
@@ -149,6 +151,7 @@ class MinecraftSource
         skipped++;
       }
     }
+    await writeBundledCoverIfMissing(destination, coverAsset);
     onProgress?.call(
       SourceProgress(
         message: 'Processed Minecraft screenshots.',

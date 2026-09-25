@@ -6,6 +6,8 @@ import 'package:gaming_memories/sources/guild_wars_2_source.dart';
 import 'package:path/path.dart' as p;
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late Directory source;
   late Directory output;
 
@@ -62,6 +64,12 @@ void main() {
       File(p.join(output.path, 'PC', 'Guild Wars 2', '2026-03-15_10-06-02.jpg'))
           .existsSync(),
       isTrue,
+    );
+    expect(
+      File(p.join(output.path, 'PC', 'Guild Wars 2', 'cover.jpg'))
+          .readAsBytesSync(),
+      File(p.join('assets/covers/platforms/pc', GuildWars2Source.coverAsset))
+          .readAsBytesSync(),
     );
   });
 

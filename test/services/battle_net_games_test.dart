@@ -32,42 +32,115 @@ void main() {
       'wow_retail',
       'wow_classic',
       'wow_classic_era',
+      'wow_anniversary',
+      'wow_forever_beta',
+      'wow_forever',
       'diablo_iv',
       'diablo_iii',
       'starcraft_ii',
+      'heroes_of_the_storm',
+      'warcraft_iii_reforged',
+      'overwatch',
       'overwatch_2',
     });
   });
 
   test('each World of Warcraft flavour has its own album', () {
     expect(game('wow_retail').albumName, 'World of Warcraft');
-    expect(game('wow_classic').albumName, 'WoW Classic');
-    expect(game('wow_classic_era').albumName, 'WoW Classic Era');
+    expect(game('wow_classic').albumName, 'World of Warcraft - Classic');
+    expect(
+      game('wow_classic_era').albumName,
+      'World of Warcraft - Classic Era',
+    );
+    expect(
+      game('wow_anniversary').albumName,
+      'World of Warcraft - Classic Anniversary',
+    );
+    expect(
+      game('wow_forever_beta').albumName,
+      'World of Warcraft - Forever (Beta)',
+    );
+    expect(game('wow_forever').albumName, 'World of Warcraft - Forever');
   });
 
   test('World of Warcraft reads TGA and dates from the file name', () {
-    for (final id in ['wow_retail', 'wow_classic', 'wow_classic_era']) {
+    for (final id in [
+      'wow_retail',
+      'wow_classic',
+      'wow_classic_era',
+      'wow_anniversary',
+      'wow_forever_beta',
+      'wow_forever',
+    ]) {
       expect(game(id).extensions, contains('.tga'));
       expect(game(id).captureDate, BattleNetCaptureDate.fileName);
     }
     expect(game('diablo_iii').captureDate, BattleNetCaptureDate.modified);
     expect(game('diablo_iii').extensions, isNot(contains('.tga')));
+    expect(
+      game('warcraft_iii_reforged').captureDate,
+      BattleNetCaptureDate.warcraftIIIFileName,
+    );
   });
 
   test('resolves the World of Warcraft flavour folders', () {
-    expect(locator().defaultPathsFor(game('wow_retail')), [
-      '/Applications/World of Warcraft/_retail_/Screenshots',
-    ]);
-    expect(locator().defaultPathsFor(game('wow_classic_era')), [
-      '/Applications/World of Warcraft/_classic_era_/Screenshots',
-    ]);
-    expect(locator(os: 'windows').defaultPathsFor(game('wow_classic')), [
+    const flavors = {
+      'wow_retail': '_retail_',
+      'wow_classic': '_classic_',
+      'wow_classic_era': '_classic_era_',
+      'wow_anniversary': '_anniversary_',
+      'wow_forever_beta': '_classic_beta_',
+      'wow_forever': '_forever_',
+    };
+    for (final entry in flavors.entries) {
+      expect(locator().defaultPathsFor(game(entry.key)), [
+        p.join('/Applications/World of Warcraft', entry.value, 'Screenshots'),
+      ]);
+      expect(locator(os: 'windows').defaultPathsFor(game(entry.key)), [
+        p.join(
+          r'C:\Program Files (x86)\World of Warcraft',
+          entry.value,
+          'Screenshots',
+        ),
+      ]);
+      expect(locator(os: 'linux').defaultPathsFor(game(entry.key)), isEmpty);
+    }
+  });
+
+  test('new game screenshot paths stay separate', () {
+    expect(
+      locator(os: 'windows').defaultPathsFor(game('heroes_of_the_storm')),
+      [p.join(home.path, 'Documents', 'Heroes of the Storm', 'Screenshots')],
+    );
+    expect(locator().defaultPathsFor(game('heroes_of_the_storm')), [
       p.join(
-        r'C:\Program Files (x86)\World of Warcraft',
-        '_classic_',
+        home.path,
+        'Library',
+        'Application Support',
+        'Blizzard',
+        'Heroes of the Storm',
         'Screenshots',
       ),
     ]);
+    for (final os in ['macos', 'windows']) {
+      expect(locator(os: os).defaultPathsFor(game('warcraft_iii_reforged')), [
+        p.join(home.path, 'Documents', 'Warcraft III', 'ScreenShots'),
+      ]);
+    }
+    expect(locator().defaultPathsFor(game('overwatch')), isEmpty);
+    expect(locator(os: 'windows').defaultPathsFor(game('overwatch')), [
+      p.join(
+        home.path,
+        'Documents',
+        'Overwatch',
+        'ScreenShots',
+        'GameClientApp',
+      ),
+    ]);
+    expect(
+      locator(os: 'windows').defaultPathsFor(game('overwatch')),
+      isNot(locator(os: 'windows').defaultPathsFor(game('overwatch_2'))),
+    );
   });
 
   test(

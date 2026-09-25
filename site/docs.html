@@ -110,6 +110,7 @@
         <section id="collect">
           <div class="doc-heading"><span>03</span><div><p class="kicker">Daily use</p><h2>Collect and browse captures</h2></div></div>
           <p>The scan action checks every enabled source. It copies new media into the library.</p>
+          <p>Supported PC sources add the matching bundled logo when they create a game album. They keep an existing <code>cover.*</code> file. A cover switch controls the logo for sources that have one.</p>
           <ul>
             <li>The timeline puts the newest media first.</li>
             <li>The sidebar groups albums by platform and game.</li>
@@ -126,7 +127,7 @@
 
         <section id="battle-net">
           <div class="doc-heading"><span>04</span><div><p class="kicker">Sources</p><h2>Battle.net</h2></div></div>
-          <p>Battle.net finds installed Diablo IV and World of Warcraft versions. Each game gets its own album.</p>
+          <p>Battle.net imports screenshots from game folders. Each game version gets its own album.</p>
           <ol>
             <li>Open <strong>Settings</strong>.</li>
             <li>Enable <strong>Battle.net</strong>.</li>
@@ -134,7 +135,10 @@
             <li>Use a custom folder when automatic detection finds no match.</li>
           </ol>
           <p>On Windows, Diablo IV screenshots are read from <code>Pictures\Diablo IV</code> and <code>Documents\Diablo IV\Screenshots</code>. On macOS, automatic World of Warcraft detection asks for access to its installation folder.</p>
-          <p>The source converts TGA screenshots to PNG. JPG and PNG screenshots keep the date from their file name.</p>
+          <p>Version folders include <code>_retail_</code>, <code>_classic_</code>, <code>_classic_era_</code>, <code>_anniversary_</code>, <code>_classic_beta_</code>, and <code>_forever_</code>. On Windows and macOS, the source checks each version's <code>Screenshots</code> folder. On Linux, select each screenshot folder in Settings.</p>
+          <p>Windows checks <code>Documents\Heroes of the Storm\Screenshots</code> and <code>Documents\Warcraft III\ScreenShots</code>. macOS checks the Heroes of the Storm folder under <code>Library/Application Support/Blizzard</code> and the Warcraft III folder under <code>Documents</code>.</p>
+          <p>Legacy Overwatch checks <code>Documents\Overwatch\ScreenShots\GameClientApp</code> on Windows. Overwatch 2 checks the separate <code>Overwatch</code> folder. Select a custom folder if your captures use another path.</p>
+          <p>The source converts TGA screenshots to PNG. World of Warcraft and Warcraft III screenshots use the date in their file names. Other games use the file modification date.</p>
         </section>
 
         <section id="steam">
