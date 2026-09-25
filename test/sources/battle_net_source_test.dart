@@ -103,16 +103,26 @@ void main() {
         );
       }
       for (final cover in {
-        'World of Warcraft': 'cover.png',
-        'World of Warcraft - Classic': 'cover.jpg',
-        'World of Warcraft - Classic Era': 'cover.jpg',
-        'World of Warcraft - Classic Anniversary': 'cover.webp',
-        'World of Warcraft - Forever (Beta)': 'cover.png',
-        'Overwatch 2': 'cover.png',
+        'World of Warcraft': 'world-of-warcraft.png',
+        'World of Warcraft - Classic': 'wow-classic.jpg',
+        'World of Warcraft - Classic Era': 'wow-classic.jpg',
+        'World of Warcraft - Classic Anniversary':
+            'wow-classic-anniversary.webp',
+        'World of Warcraft - Forever (Beta)': 'wow-forever-beta.png',
+        'Overwatch 2': 'overwatch-2.png',
       }.entries) {
+        final actual = File(
+          p.join(
+            output.path,
+            'PC',
+            cover.key,
+            'cover${p.extension(cover.value)}',
+          ),
+        );
         expect(
-          File(p.join(output.path, 'PC', cover.key, cover.value)).existsSync(),
-          isTrue,
+          actual.readAsBytesSync(),
+          File(p.join('assets/covers/platforms/pc', cover.value))
+              .readAsBytesSync(),
           reason: cover.key,
         );
       }

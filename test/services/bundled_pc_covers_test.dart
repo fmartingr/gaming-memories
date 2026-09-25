@@ -3,7 +3,10 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:gaming_memories/services/battle_net_games.dart';
 import 'package:gaming_memories/services/bundled_pc_covers.dart';
+import 'package:gaming_memories/sources/guild_wars_2_source.dart';
+import 'package:gaming_memories/sources/minecraft_source.dart';
 import 'package:path/path.dart' as p;
 
 class _CoverBundle extends CachingAssetBundle {
@@ -33,7 +36,11 @@ void main() {
   tearDown(() => root.delete(recursive: true));
 
   test('every mapped logo file exists', () {
-    for (final assetName in pcCoverAssets.values) {
+    for (final assetName in [
+      ...battleNetGames.map((game) => game.coverAsset).whereType<String>(),
+      MinecraftSource.coverAsset,
+      GuildWars2Source.coverAsset,
+    ]) {
       expect(
         File(p.join('assets/covers/platforms/pc', assetName)).existsSync(),
         isTrue,
@@ -51,7 +58,7 @@ void main() {
     });
 
     await BundledPcCovers(bundle: bundle)
-        .writeIfMissing(album, 'World of Warcraft - Classic Anniversary');
+        .writeIfMissing(album, 'wow-classic-anniversary.webp');
 
     expect(File(p.join(album.path, 'cover.webp')).readAsBytesSync(), [1, 2, 3]);
     expect(bundle.loaded, [
@@ -65,7 +72,8 @@ void main() {
       ..writeAsStringSync('mine');
     final bundle = _CoverBundle(const {});
 
-    await BundledPcCovers(bundle: bundle).writeIfMissing(album, 'Minecraft');
+    await BundledPcCovers(bundle: bundle)
+        .writeIfMissing(album, 'minecraft.png');
 
     expect(cover.readAsStringSync(), 'mine');
     expect(bundle.loaded, isEmpty);
@@ -75,7 +83,8 @@ void main() {
     final album = Directory(p.join(root.path, 'Minecraft'));
     final bundle = _CoverBundle(const {});
 
-    await BundledPcCovers(bundle: bundle).writeIfMissing(album, 'Minecraft');
+    await BundledPcCovers(bundle: bundle)
+        .writeIfMissing(album, 'minecraft.png');
 
     expect(album.existsSync(), isFalse);
     expect(bundle.loaded, isEmpty);
@@ -85,7 +94,7 @@ void main() {
     final album = Directory(p.join(root.path, 'Minecraft'))..createSync();
 
     await BundledPcCovers(bundle: _CoverBundle(const {}))
-        .writeIfMissing(album, 'Minecraft');
+        .writeIfMissing(album, 'minecraft.png');
 
     expect(album.listSync(), isEmpty);
   });

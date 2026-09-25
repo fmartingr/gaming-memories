@@ -1,23 +1,9 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 
 import 'app_log.dart';
-
-/// The bundled logo for each supported PC source album.
-const pcCoverAssets = <String, String>{
-  'Diablo IV': 'diablo-iv.png',
-  'Guild Wars 2': 'guild-wars-2.jpg',
-  'Minecraft': 'minecraft.png',
-  'Overwatch 2': 'overwatch-2.png',
-  'World of Warcraft': 'world-of-warcraft.png',
-  'World of Warcraft - Classic': 'wow-classic.jpg',
-  'World of Warcraft - Classic Era': 'wow-classic-era.jpg',
-  'World of Warcraft - Classic Anniversary': 'wow-classic-anniversary.webp',
-  'World of Warcraft - Forever (Beta)': 'wow-forever-beta.png',
-};
 
 class BundledPcCovers {
   const BundledPcCovers({this.bundle});
@@ -25,8 +11,7 @@ class BundledPcCovers {
   final AssetBundle? bundle;
 
   /// Adds a logo to an existing album, unless that album has a cover already.
-  Future<void> writeIfMissing(Directory album, String albumName) async {
-    final assetName = pcCoverAssets[albumName];
+  Future<void> writeIfMissing(Directory album, String? assetName) async {
     if (assetName == null) {
       return;
     }
@@ -50,15 +35,9 @@ class BundledPcCovers {
       final extension = p.extension(assetName);
       await File(p.join(album.path, 'cover$extension'))
           .writeAsBytes(Uint8List.sublistView(data), flush: true);
-    } on FlutterError catch (error) {
+    } catch (error) {
       diagnosticLog.warning(
-        'The bundled cover for $albumName could not be read.',
-        category: 'source',
-        error: error,
-      );
-    } on FileSystemException catch (error) {
-      diagnosticLog.warning(
-        'The bundled cover for $albumName could not be saved.',
+        'The bundled cover for ${p.basename(album.path)} could not be written.',
         category: 'source',
         error: error,
       );

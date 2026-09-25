@@ -48,6 +48,7 @@ class BattleNetGame {
     required this.name,
     required this.albumName,
     required this.defaultPaths,
+    this.coverAsset,
     this.extensions = defaultExtensions,
     this.captureDate = BattleNetCaptureDate.modified,
   });
@@ -63,6 +64,9 @@ class BattleNetGame {
 
   /// The album it imports into, under the `PC` platform folder.
   final String albumName;
+
+  /// Bundled logo filename for this game's album, when one is available.
+  final String? coverAsset;
 
   /// Candidate folders per operating system. A game absent from this map has
   /// no client on that platform and can still be pointed at a custom folder.
@@ -86,11 +90,13 @@ BattleNetGame _worldOfWarcraft({
   required String name,
   required String albumName,
   required String flavor,
+  required String coverAsset,
 }) {
   return BattleNetGame(
     id: id,
     name: name,
     albumName: albumName,
+    coverAsset: coverAsset,
     defaultPaths: {
       'macos': [
         BattleNetScreenshotPath.absolute(_wowMacOSInstall, [
@@ -116,35 +122,41 @@ final battleNetGames = <BattleNetGame>[
     name: 'World of Warcraft',
     albumName: 'World of Warcraft',
     flavor: '_retail_',
+    coverAsset: 'world-of-warcraft.png',
   ),
   _worldOfWarcraft(
     id: 'wow_classic',
     name: 'World of Warcraft - Classic',
     albumName: 'World of Warcraft - Classic',
     flavor: '_classic_',
+    coverAsset: 'wow-classic.jpg',
   ),
   _worldOfWarcraft(
     id: 'wow_classic_era',
     name: 'World of Warcraft - Classic Era',
     albumName: 'World of Warcraft - Classic Era',
     flavor: '_classic_era_',
+    coverAsset: 'wow-classic.jpg',
   ),
   _worldOfWarcraft(
     id: 'wow_anniversary',
     name: 'World of Warcraft - Classic Anniversary',
     albumName: 'World of Warcraft - Classic Anniversary',
     flavor: '_anniversary_',
+    coverAsset: 'wow-classic-anniversary.webp',
   ),
   _worldOfWarcraft(
     id: 'wow_forever_beta',
     name: 'World of Warcraft - Forever (Beta)',
     albumName: 'World of Warcraft - Forever (Beta)',
     flavor: '_classic_beta_',
+    coverAsset: 'wow-forever-beta.png',
   ),
   const BattleNetGame(
     id: 'diablo_iv',
     name: 'Diablo IV',
     albumName: 'Diablo IV',
+    coverAsset: 'diablo-iv.png',
     defaultPaths: {
       'windows': [
         BattleNetScreenshotPath.underHome(['Pictures', 'Diablo IV']),
@@ -202,6 +214,7 @@ final battleNetGames = <BattleNetGame>[
     id: 'overwatch_2',
     name: 'Overwatch 2',
     albumName: 'Overwatch 2',
+    coverAsset: 'overwatch-2.png',
     defaultPaths: {
       'macos': [
         BattleNetScreenshotPath.underHome([

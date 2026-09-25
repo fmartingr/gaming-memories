@@ -66,8 +66,10 @@ void main() {
       isTrue,
     );
     expect(
-      File(p.join(output.path, 'PC', 'Guild Wars 2', 'cover.jpg')).existsSync(),
-      isTrue,
+      File(p.join(output.path, 'PC', 'Guild Wars 2', 'cover.jpg'))
+          .readAsBytesSync(),
+      File(p.join('assets/covers/platforms/pc', GuildWars2Source.coverAsset))
+          .readAsBytesSync(),
     );
   });
 

@@ -41,6 +41,23 @@ void main() {
     });
   });
 
+  test('each game uses its matching bundled logo', () {
+    const expected = {
+      'wow_retail': 'world-of-warcraft.png',
+      'wow_classic': 'wow-classic.jpg',
+      'wow_classic_era': 'wow-classic.jpg',
+      'wow_anniversary': 'wow-classic-anniversary.webp',
+      'wow_forever_beta': 'wow-forever-beta.png',
+      'diablo_iv': 'diablo-iv.png',
+      'diablo_iii': null,
+      'starcraft_ii': null,
+      'overwatch_2': 'overwatch-2.png',
+    };
+    expect({
+      for (final game in battleNetGames) game.id: game.coverAsset,
+    }, expected);
+  });
+
   test('each World of Warcraft flavour has its own album', () {
     expect(game('wow_retail').albumName, 'World of Warcraft');
     expect(game('wow_classic').albumName, 'World of Warcraft - Classic');

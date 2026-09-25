@@ -23,6 +23,7 @@ class GuildWars2Source
 
   static const id = 'guild_wars_2';
   static const gameName = 'Guild Wars 2';
+  static const coverAsset = 'guild-wars-2.jpg';
   static const platform = 'PC';
 
   @override
@@ -140,7 +141,7 @@ class GuildWars2Source
       }
     }
 
-    await covers.writeIfMissing(destination, gameName);
+    await covers.writeIfMissing(destination, coverAsset);
 
     onProgress?.call(
       SourceProgress(

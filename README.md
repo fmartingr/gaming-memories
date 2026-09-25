@@ -54,9 +54,9 @@ platform and game, or open a capture for a closer look without leaving the app.
 | **PlayStation 5** | Folder exported from the console | FFprobe recommended for clip dates |
 | **Steam** | Local screenshots and the optional online gallery | Steam Web API key; SteamID64 for online imports |
 
-Supported PC sources can add a bundled logo to an album. Sources
-without a cover switch keep an existing `cover.*` file. A cover switch controls
-the logo for sources that have one.
+Supported PC sources add the matching bundled logo when they create a game album.
+They keep an existing `cover.*` file. A cover switch controls the logo for
+sources that have one.
 
 Each source's setup and behavior is described in the
 [documentation](https://fmartingr.github.io/gaming-memories/docs.html).

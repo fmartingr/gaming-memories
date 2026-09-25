@@ -130,6 +130,7 @@ class BattleNetSource implements FolderBackedScreenshotSource {
     }
     media.sort((left, right) => left.file.path.compareTo(right.file.path));
 
+    final library = p.join(expandUserPath(outputPath), platform);
     var imported = 0;
     var skipped = 0;
     for (var index = 0; index < media.length; index++) {
@@ -142,11 +143,7 @@ class BattleNetSource implements FolderBackedScreenshotSource {
         ),
       );
       final destination = Directory(
-        p.join(
-          expandUserPath(outputPath),
-          platform,
-          item.folder.game.albumName,
-        ),
+        p.join(library, item.folder.game.albumName),
       );
       if (await _copy(item, destination) == true) {
         imported++;
@@ -157,10 +154,8 @@ class BattleNetSource implements FolderBackedScreenshotSource {
 
     for (final folder in folders) {
       await covers.writeIfMissing(
-        Directory(
-          p.join(expandUserPath(outputPath), platform, folder.game.albumName),
-        ),
-        folder.game.albumName,
+        Directory(p.join(library, folder.game.albumName)),
+        folder.game.coverAsset,
       );
     }
 

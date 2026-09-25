@@ -25,6 +25,7 @@ class MinecraftSource
 
   static const id = 'minecraft';
   static const gameName = 'Minecraft';
+  static const coverAsset = 'minecraft.png';
   static const platform = 'PC';
 
   @override
@@ -152,7 +153,7 @@ class MinecraftSource
         skipped++;
       }
     }
-    await covers.writeIfMissing(destination, gameName);
+    await covers.writeIfMissing(destination, coverAsset);
     onProgress?.call(
       SourceProgress(
         message: 'Processed Minecraft screenshots.',
