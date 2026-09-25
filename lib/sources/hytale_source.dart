@@ -30,7 +30,7 @@ class HytaleSource
   static const gameName = 'Hytale';
   static const platform = 'PC';
   static const _extensions = {'.png', '.jpg', '.jpeg'};
-  static const _coverAsset = 'assets/covers/hytale.png';
+  static const _coverAsset = 'assets/covers/platforms/pc/hytale.png';
 
   @override
   String get name => gameName;
