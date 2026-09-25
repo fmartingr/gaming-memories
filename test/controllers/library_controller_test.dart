@@ -532,6 +532,46 @@ void main() {
     );
   });
 
+  test('ignores a hidden game from the library watcher', () async {
+    final directory = await Directory.systemTemp.createTemp(
+      'gaming-memories-controller-',
+    );
+    addTearDown(() => directory.delete(recursive: true));
+    final library = Directory(p.join(directory.path, 'library'));
+    await Directory(p.join(library.path, 'PC')).create(recursive: true);
+    final store = ConfigStore(
+      filePath: p.join(directory.path, 'settings.json'),
+    );
+    await store.save(AppSettings(outputPath: library.path));
+    final watcher = _FakeLibraryWatcher();
+    final controller = LibraryController(
+      configStore: store,
+      scanner: const LibraryScanner(),
+      libraryWatcher: watcher,
+      sources: const [],
+    );
+    addTearDown(controller.dispose);
+    await controller.initialize();
+    await _waitForController(
+      () => !controller.isTimelineRefreshing && watcher.paths.isNotEmpty,
+    );
+
+    final hiddenGame = Directory(p.join(library.path, 'PC', '.private'));
+    await hiddenGame.create();
+    await File(p.join(hiddenGame.path, 'capture.jpg')).writeAsBytes([1]);
+    watcher.add(
+      LibraryChange(
+        kind: LibraryChangeKind.create,
+        path: hiddenGame.path,
+        isDirectory: true,
+      ),
+    );
+    await _waitForController(() => controller.pendingLibraryChangeCount == 0);
+
+    expect(controller.folderTree.single.children, isEmpty);
+    expect(controller.timelineMedia, isEmpty);
+  });
+
   test('takes in a game folder that arrives whole', () async {
     final directory = await Directory.systemTemp.createTemp(
       'gaming-memories-controller-',

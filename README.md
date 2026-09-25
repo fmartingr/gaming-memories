@@ -29,6 +29,8 @@ platform and game, or open a capture for a closer look without leaving the app.
 - **One unified timeline:** Browse screenshots and clips from every enabled
   source in capture-date order.
 - **Structured albums:** Navigate by platform, game, and nested folders.
+- **Hidden folders:** Album lists skip dot-prefixed folders. On Windows, they
+  also skip folders with the hidden attribute.
 - **Rich image viewing:** Zoom with a pinch, double click, or modifier scroll,
   then pan naturally with a trackpad.
 - **Video support:** See generated thumbnails and durations, then play clips
