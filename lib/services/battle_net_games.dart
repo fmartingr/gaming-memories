@@ -138,7 +138,7 @@ final battleNetGames = <BattleNetGame>[
     name: 'World of Warcraft - Classic Era',
     albumName: 'World of Warcraft - Classic Era',
     flavor: '_classic_era_',
-    coverAsset: 'wow-classic-era.jpg',
+    coverAsset: 'wow-classic.jpg',
   ),
   _worldOfWarcraft(
     id: 'wow_anniversary',
@@ -246,7 +246,7 @@ final battleNetGames = <BattleNetGame>[
   const BattleNetGame(
     id: 'warcraft_iii_reforged',
     name: 'Warcraft III: Reforged',
-    albumName: 'Warcraft III: Reforged',
+    albumName: 'Warcraft III - Reforged',
     coverAsset: 'warcraft-iii-reforged.png',
     captureDate: BattleNetCaptureDate.warcraftIIIFileName,
     defaultPaths: {

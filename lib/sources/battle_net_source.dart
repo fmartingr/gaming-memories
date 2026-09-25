@@ -7,6 +7,7 @@ import '../models/app_settings.dart';
 import '../services/app_log.dart';
 import '../services/battle_net_games.dart';
 import '../services/bundled_pc_covers.dart';
+import '../services/capture_date.dart';
 import '../services/folder_access_service.dart';
 import '../services/library_scanner.dart';
 import '../services/media_importer.dart';
@@ -21,12 +22,10 @@ class BattleNetSource implements FolderBackedScreenshotSource {
   const BattleNetSource({
     this.importer = const MediaImporter(),
     this.locator = const BattleNetLocator(),
-    this.covers = const BundledPcCovers(),
   });
 
   final MediaImporter importer;
   final BattleNetLocator locator;
-  final BundledPcCovers covers;
 
   static const id = 'battle_net';
   static const sourceName = 'Battle.net';
@@ -153,7 +152,7 @@ class BattleNetSource implements FolderBackedScreenshotSource {
     }
 
     for (final folder in folders) {
-      await covers.writeIfMissing(
+      await writeBundledCoverIfMissing(
         Directory(p.join(library, folder.game.albumName)),
         folder.game.coverAsset,
       );
@@ -200,8 +199,9 @@ class BattleNetSource implements FolderBackedScreenshotSource {
       BattleNetCaptureDate.fileName => parseWorldOfWarcraftScreenshotDate(
         p.basename(file.path),
       ),
-      BattleNetCaptureDate.warcraftIIIFileName =>
-        parseWarcraftIIIScreenshotDate(p.basename(file.path)),
+      BattleNetCaptureDate.warcraftIIIFileName => capturedAtFromName(
+        p.basename(file.path),
+      ),
     };
     if (game.captureDate != BattleNetCaptureDate.modified &&
         capturedAt == null) {
@@ -251,27 +251,10 @@ class BattleNetSource implements FolderBackedScreenshotSource {
 }
 
 DateTime? parseWorldOfWarcraftScreenshotDate(String name) {
-  return _parseScreenshotDate(
-    name,
-    RegExp(
-      r'^WoWScrnShot_(\d{2})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})\.(?:jpe?g|png|tga)$',
-      caseSensitive: false,
-    ),
-  );
-}
-
-DateTime? parseWarcraftIIIScreenshotDate(String name) {
-  return _parseScreenshotDate(
-    name,
-    RegExp(
-      r'^WC3ScrnShot_(\d{2})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})_\d+\.(?:jpe?g|png)$',
-      caseSensitive: false,
-    ),
-  );
-}
-
-DateTime? _parseScreenshotDate(String name, RegExp pattern) {
-  final match = pattern.firstMatch(name);
+  final match = RegExp(
+    r'^WoWScrnShot_(\d{2})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})\.(?:jpe?g|png|tga)$',
+    caseSensitive: false,
+  ).firstMatch(name);
   if (match == null) {
     return null;
   }

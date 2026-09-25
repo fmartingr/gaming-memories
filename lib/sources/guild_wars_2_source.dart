@@ -13,13 +13,9 @@ import 'screenshot_source.dart';
 class GuildWars2Source
     with SingleFolderRequirement
     implements FolderBackedScreenshotSource {
-  const GuildWars2Source({
-    this.importer = const MediaImporter(),
-    this.covers = const BundledPcCovers(),
-  });
+  const GuildWars2Source({this.importer = const MediaImporter()});
 
   final MediaImporter importer;
-  final BundledPcCovers covers;
 
   static const id = 'guild_wars_2';
   static const gameName = 'Guild Wars 2';
@@ -141,7 +137,7 @@ class GuildWars2Source
       }
     }
 
-    await covers.writeIfMissing(destination, coverAsset);
+    await writeBundledCoverIfMissing(destination, coverAsset);
 
     onProgress?.call(
       SourceProgress(

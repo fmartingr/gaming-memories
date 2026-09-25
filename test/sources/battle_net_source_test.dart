@@ -126,7 +126,7 @@ void main() {
       for (final relative in [
         ['Overwatch', '2026-09-17_08-09-10.jpg'],
         ['Heroes of the Storm', '2026-09-18_09-10-11.jpg'],
-        ['Warcraft III: Reforged', '2026-09-25_17-34-07.png'],
+        ['Warcraft III - Reforged', '2026-09-25_17-34-07.png'],
         ['World of Warcraft', '2026-09-20_11-22-33.jpg'],
         ['World of Warcraft - Classic', '2026-09-21_12-23-34.png'],
         ['World of Warcraft - Classic Era', '2026-09-21_12-23-35.jpg'],
@@ -146,13 +146,13 @@ void main() {
       for (final cover in {
         'World of Warcraft': 'world-of-warcraft.png',
         'World of Warcraft - Classic': 'wow-classic.jpg',
-        'World of Warcraft - Classic Era': 'wow-classic-era.jpg',
+        'World of Warcraft - Classic Era': 'wow-classic.jpg',
         'World of Warcraft - Classic Anniversary':
             'wow-classic-anniversary.webp',
         'World of Warcraft - Forever (Beta)': 'wow-forever-beta.png',
         'World of Warcraft - Forever': 'wow-forever.png',
         'Heroes of the Storm': 'heroes-of-the-storm.png',
-        'Warcraft III: Reforged': 'warcraft-iii-reforged.png',
+        'Warcraft III - Reforged': 'warcraft-iii-reforged.png',
         'Overwatch': 'overwatch.png',
         'Overwatch 2': 'overwatch-2.png',
       }.entries) {
@@ -391,18 +391,6 @@ void main() {
       isNull,
     );
     expect(parseWorldOfWarcraftScreenshotDate('invalid.jpg'), isNull);
-  });
-
-  test('parses Warcraft III dates from its screenshot name', () {
-    expect(
-      parseWarcraftIIIScreenshotDate('WC3ScrnShot_092526_173407_000.png'),
-      DateTime(2026, 9, 25, 17, 34, 7),
-    );
-    expect(
-      parseWarcraftIIIScreenshotDate('WC3ScrnShot_023126_173407_000.png'),
-      isNull,
-    );
-    expect(parseWarcraftIIIScreenshotDate('invalid.png'), isNull);
   });
 }
 

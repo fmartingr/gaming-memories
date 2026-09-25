@@ -16,12 +16,10 @@ class MinecraftSource
   const MinecraftSource({
     this.importer = const MediaImporter(),
     this.sourcePaths = const SourcePathResolver(),
-    this.covers = const BundledPcCovers(),
   });
 
   final MediaImporter importer;
   final SourcePathResolver sourcePaths;
-  final BundledPcCovers covers;
 
   static const id = 'minecraft';
   static const gameName = 'Minecraft';
@@ -153,7 +151,7 @@ class MinecraftSource
         skipped++;
       }
     }
-    await covers.writeIfMissing(destination, coverAsset);
+    await writeBundledCoverIfMissing(destination, coverAsset);
     onProgress?.call(
       SourceProgress(
         message: 'Processed Minecraft screenshots.',
