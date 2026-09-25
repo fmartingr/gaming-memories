@@ -4,6 +4,10 @@ const latestReleaseUrl = `${releasesUrl}/latest`;
 
 document.documentElement.classList.add('js');
 
+if (window.matchMedia('(any-pointer: coarse)').matches) {
+  document.addEventListener('gesturestart', (event) => event.preventDefault(), { passive: false });
+}
+
 function platformKey() {
   const value = `${navigator.userAgentData?.platform || ''} ${navigator.platform || ''} ${navigator.userAgent || ''}`.toLowerCase();
   if (value.includes('win')) return 'windows';

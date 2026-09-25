@@ -405,4 +405,14 @@ void main() {
       contains("caption.textContent = ''"),
     );
   });
+
+  test('mobile page zoom stays off while image lightbox zoom stays on', () {
+    final album = folder(files: [file('a.png')]);
+    final html = const GalleryTemplate(site: site).render(album.pages().first);
+
+    expect(html, contains('maximum-scale=1.0, user-scalable=no'));
+    expect(html, contains('html { touch-action: pan-x pan-y; }'));
+    expect(html, contains('.lightbox img { touch-action: none;'));
+    expect(html, contains('scale = Math.max(1, Math.min(4,'));
+  });
 }
