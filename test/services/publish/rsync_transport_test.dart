@@ -297,7 +297,9 @@ void main() {
   });
 
   group('against a real rsync', () {
-    final rsyncPath = Platform.environment['GAMING_MEMORIES_RSYNC'] ?? 'rsync';
+    final rsyncPath =
+        Platform.environment['GAMING_MEMORIES_RSYNC'] ??
+        RsyncTransport.executable;
     final runner = _PinnedRsyncRunner(rsyncPath);
     late Directory library;
     late Directory build;
@@ -328,7 +330,7 @@ void main() {
       final version = await rsync.probe();
       if (version == null || !version.isUsable) {
         markTestSkipped(
-          'No rsync 3 on PATH; set GAMING_MEMORIES_RSYNC to one to prove '
+          'No rsync 3 found; set GAMING_MEMORIES_RSYNC to one to prove '
           'the flag semantics.',
         );
         return;

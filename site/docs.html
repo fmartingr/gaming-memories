@@ -221,7 +221,7 @@
 
           <h3>Transfer</h3>
           <p><strong>Automatic</strong> uses rsync when this computer has version 3 or newer and no passphrase is required. Otherwise the upload uses SFTP, which needs no other program and works on every platform. A password always uses SFTP.</p>
-          <div class="doc-callout warning"><b>The rsync in macOS</b><p>macOS ships openrsync. It accepts the options a mirrored publish needs and then ignores them, so Gaming Memories uses SFTP instead. Install rsync 3 for the faster path.</p></div>
+          <div class="doc-callout warning"><b>The rsync in macOS</b><p>macOS ships openrsync. It accepts the options a mirrored publish needs and then ignores them, so Gaming Memories uses SFTP instead. Install rsync 3 with Homebrew for the faster path. Gaming Memories looks for <code>/opt/homebrew/bin/rsync</code> before the <code>rsync</code> on <code>PATH</code>.</p></div>
           <p>File and folder permissions are applied during the upload. <code>644</code> and <code>755</code> match <code>chmod -R u=rwX,go=rX</code>.</p>
 
           <h3>What is published</h3>

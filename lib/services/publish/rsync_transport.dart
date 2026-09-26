@@ -105,6 +105,16 @@ class RsyncTransport implements PublishTransport {
   @override
   String get name => 'rsync';
 
+  static const homebrewRsync = '/opt/homebrew/bin/rsync';
+
+  /// A macOS app opened from the Finder gets the system PATH, where `rsync` is
+  /// the openrsync in /usr/bin, so an rsync 3 from Homebrew is looked for
+  /// first.
+  static String get executable =>
+      Platform.isMacOS && File(homebrewRsync).existsSync()
+      ? homebrewRsync
+      : 'rsync';
+
   /// Names never sent to the remote: the app's own caches, the platform
   /// leftovers that are none of a web server's business, and any page already
   /// sitting in the library.
@@ -125,7 +135,7 @@ class RsyncTransport implements PublishTransport {
   /// Whether this machine has an rsync that can do the job.
   Future<RsyncVersion?> probe() async {
     try {
-      final result = await runner.run('rsync', ['--version']);
+      final result = await runner.run(executable, ['--version']);
       if (result.exitCode != 0) {
         return null;
       }
@@ -353,7 +363,7 @@ class RsyncTransport implements PublishTransport {
   }) async {
     final Process process;
     try {
-      process = await runner.start('rsync', arguments);
+      process = await runner.start(executable, arguments);
     } on ProcessException catch (error) {
       throw PublishException(
         'rsync could not be started.',

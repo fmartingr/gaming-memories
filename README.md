@@ -259,8 +259,9 @@ on a terminal the app does not have.
 
 The `rsync` that macOS ships is openrsync. It accepts the flags a mirrored
 publish needs and then ignores them, which would leave captures you deleted on
-the host, so it is never used — install rsync 3 if you want the faster path
-there.
+the host, so it is never used — install rsync 3 with Homebrew if you want the
+faster path there. `/opt/homebrew/bin/rsync` is tried before the `rsync` on
+`PATH`.
 
 ## Development
 
