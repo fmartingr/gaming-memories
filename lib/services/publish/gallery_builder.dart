@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
+import '../name_order.dart';
 import 'gallery_node.dart';
 import 'platform_covers.dart';
 
@@ -132,7 +133,7 @@ class GalleryBuilder {
       }
     }
 
-    folders.sort((left, right) => left.name.compareTo(right.name));
+    folders.sort((left, right) => compareNames(left.name, right.name));
     files.sort((left, right) => left.name.compareTo(right.name));
 
     return GalleryFolder(

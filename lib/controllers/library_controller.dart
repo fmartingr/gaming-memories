@@ -13,6 +13,7 @@ import '../services/config_store.dart';
 import '../services/folder_access_service.dart';
 import '../services/library_scanner.dart';
 import '../services/library_watcher.dart';
+import '../services/name_order.dart';
 import '../services/publish/publish_service.dart';
 import '../services/publish/publish_transport.dart';
 import '../services/screenshot_action_service.dart';
@@ -2410,7 +2411,7 @@ class LibraryController extends ChangeNotifier {
       platforms.add(
         LibraryFolder(name: parts[0], path: p.join(root, parts[0])),
       );
-      platforms.sort((left, right) => left.name.compareTo(right.name));
+      platforms.sort((left, right) => compareNames(left.name, right.name));
       platformIndex = platforms.indexWhere((folder) => folder.name == parts[0]);
       changed = true;
     }
@@ -2431,7 +2432,7 @@ class LibraryController extends ChangeNotifier {
           childrenLoaded: false,
         ),
       );
-      games.sort((left, right) => left.name.compareTo(right.name));
+      games.sort((left, right) => compareNames(left.name, right.name));
       gameIndex = games.indexWhere((folder) => folder.name == parts[1]);
       changed = true;
     }
@@ -2466,7 +2467,7 @@ class LibraryController extends ChangeNotifier {
             relativePath: relative,
           ),
         );
-        children.sort((left, right) => left.name.compareTo(right.name));
+        children.sort((left, right) => compareNames(left.name, right.name));
         childIndex = children.indexWhere(
           (child) => child.name == segments[index],
         );
@@ -2650,7 +2651,7 @@ class LibraryController extends ChangeNotifier {
       ..sort((left, right) => right.capturedAt.compareTo(left.capturedAt));
     folders
       ..removeWhere((folder) => removed(folder.path))
-      ..sort((left, right) => left.name.compareTo(right.name));
+      ..sort((left, right) => compareNames(left.name, right.name));
     return FolderListing(
       folders: List.unmodifiable(folders),
       media: List.unmodifiable(media),
@@ -2710,7 +2711,7 @@ class LibraryController extends ChangeNotifier {
     }
     final folders = List<LibraryFolder>.of(folderListing.folders)
       ..add(folder)
-      ..sort((left, right) => left.name.compareTo(right.name));
+      ..sort((left, right) => compareNames(left.name, right.name));
     folderListing = FolderListing(folders: folders, media: folderListing.media);
     isViewLoading = false;
     return true;

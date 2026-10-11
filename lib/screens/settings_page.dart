@@ -11,6 +11,7 @@ import '../models/app_settings.dart';
 import '../services/battle_net_games.dart';
 import '../services/folder_access_service.dart';
 import '../services/library_scanner.dart';
+import '../services/name_order.dart';
 import '../sources/battle_net_source.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -242,7 +243,7 @@ class _SettingsPageState extends State<SettingsPage> {
       text: publish.target.directoryMode,
     );
     _publishExcludedInputController = TextEditingController();
-    _publishExcluded = [...publish.excluded];
+    _publishExcluded = [...publish.excluded]..sort(compareNames);
     _steamCustomGames = steam.customGames.entries
         .map((entry) => _CustomGame(entry.key, entry.value))
         .toList();
@@ -1540,7 +1541,7 @@ class _SettingsPageState extends State<SettingsPage> {
     }
     setState(() {
       _publishExcluded.add(value);
-      _publishExcluded.sort();
+      _publishExcluded.sort(compareNames);
       _publishExcludedInputController.clear();
     });
     _scheduleAutosave(immediate: true);

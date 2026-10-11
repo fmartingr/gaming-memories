@@ -572,6 +572,73 @@ void main() {
     expect(controller.timelineMedia, isEmpty);
   });
 
+  test('puts a watched game where a full scan would', () async {
+    final directory = await Directory.systemTemp.createTemp(
+      'gaming-memories-controller-',
+    );
+    addTearDown(() => directory.delete(recursive: true));
+    final library = Directory(p.join(directory.path, 'library'));
+    // The names from issue #7, less the colon Windows forbids in a folder.
+    const expected = [
+      'Bō Path of the Teal Lotus',
+      'Celeste',
+      'CONTROL',
+      'Game 2',
+      'Game 10',
+      'Roki',
+      'Röki',
+      'shapez',
+      'tERRORbane',
+      'Warcraft',
+      'WHAT THE GOLF',
+    ];
+    for (final game in expected.where((game) => game != 'Röki')) {
+      await Directory(p.join(library.path, 'PC', game)).create(recursive: true);
+    }
+    final store = ConfigStore(
+      filePath: p.join(directory.path, 'settings.json'),
+    );
+    await store.save(AppSettings(outputPath: library.path));
+    final watcher = _FakeLibraryWatcher();
+    final controller = LibraryController(
+      configStore: store,
+      scanner: const LibraryScanner(),
+      libraryWatcher: watcher,
+      sources: const [],
+    );
+    addTearDown(controller.dispose);
+    await controller.initialize();
+    await _waitForController(
+      () => !controller.isTimelineRefreshing && watcher.paths.isNotEmpty,
+    );
+
+    List<String>? firstSeen;
+    controller.addListener(() {
+      final games = controller.folderTree.single.children
+          .map((game) => game.name)
+          .toList();
+      if (firstSeen == null && games.contains('Röki')) {
+        firstSeen = games;
+      }
+    });
+    final newGame = Directory(p.join(library.path, 'PC', 'Röki'));
+    await newGame.create();
+    watcher.add(
+      LibraryChange(
+        kind: LibraryChangeKind.create,
+        path: newGame.path,
+        isDirectory: true,
+      ),
+    );
+    await _waitForController(() => controller.pendingLibraryChangeCount == 0);
+
+    expect(firstSeen, expected);
+    expect(
+      controller.folderTree.single.children.map((game) => game.name),
+      expected,
+    );
+  });
+
   test('takes in a game folder that arrives whole', () async {
     final directory = await Directory.systemTemp.createTemp(
       'gaming-memories-controller-',

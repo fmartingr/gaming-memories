@@ -6,6 +6,7 @@ import 'package:win32/win32.dart';
 
 import '../models/library.dart';
 import 'capture_date.dart';
+import 'name_order.dart';
 import 'thumbnail_service.dart';
 import 'video_metadata_service.dart';
 
@@ -68,9 +69,9 @@ class LibraryScanner {
     }
 
     albums.sort((left, right) {
-      final platformOrder = left.platform.compareTo(right.platform);
+      final platformOrder = compareNames(left.platform, right.platform);
       return platformOrder == 0
-          ? left.game.compareTo(right.game)
+          ? compareNames(left.game, right.game)
           : platformOrder;
     });
 
@@ -371,7 +372,7 @@ class LibraryScanner {
     List<MediaItem> media,
   ) {
     final sortedFolders = List<LibraryFolder>.of(folders)
-      ..sort((left, right) => left.name.compareTo(right.name));
+      ..sort((left, right) => compareNames(left.name, right.name));
     final sortedMedia = List<MediaItem>.of(media)
       ..sort((left, right) => right.capturedAt.compareTo(left.capturedAt));
     return FolderListing(
@@ -417,7 +418,7 @@ class LibraryScanner {
           )
           .cast<Directory>()
           .toList();
-      directories.sort((left, right) => left.path.compareTo(right.path));
+      directories.sort((left, right) => compareNames(left.path, right.path));
       return directories;
     } on FileSystemException {
       return const [];

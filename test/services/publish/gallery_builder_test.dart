@@ -127,6 +127,33 @@ void main() {
     expect(findFolder(root, 'Steam').folders.map((f) => f.name), ['Hades']);
   });
 
+  test('orders folder tiles the way the app does', () async {
+    // Windows forbids the colon of `Bō: Path of the Teal Lotus` in a folder.
+    const expected = [
+      'Bō Path of the Teal Lotus',
+      'Celeste',
+      'CONTROL',
+      'Game 2',
+      'Game 10',
+      'Roki',
+      'Röki',
+      'shapez',
+      'tERRORbane',
+      'Warcraft',
+      'WHAT THE GOLF',
+    ];
+    for (final game in expected.reversed) {
+      await write('Steam/$game/a.png', 'image');
+    }
+
+    final root = await const GalleryBuilder().build(
+      libraryPath: library.path,
+      siteTitle: 'Memories',
+    );
+
+    expect(findFolder(root, 'Steam').folders.map((f) => f.name), expected);
+  });
+
   test('reads a clip duration from the cache beside it', () async {
     await write('Steam/Hades/b.mp4', 'clip');
     await write(
