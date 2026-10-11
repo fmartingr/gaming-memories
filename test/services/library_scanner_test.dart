@@ -9,6 +9,23 @@ import 'package:gaming_memories/services/video_metadata_service.dart';
 import 'package:image/image.dart' as image;
 import 'package:path/path.dart' as p;
 
+/// The names from issue #7, in the order a person expects them. The colon in
+/// `Bō: Path of the Teal Lotus` is gone because Windows forbids it in a folder
+/// name.
+const _sortedNames = [
+  'Bō Path of the Teal Lotus',
+  'Celeste',
+  'CONTROL',
+  'Game 2',
+  'Game 10',
+  'Roki',
+  'Röki',
+  'shapez',
+  'tERRORbane',
+  'Warcraft',
+  'WHAT THE GOLF',
+];
+
 void main() {
   test('builds albums and sorts the timeline by capture date', () async {
     final output = await Directory.systemTemp.createTemp('gaming-memories-');
@@ -91,6 +108,61 @@ void main() {
     expect(subAlbums.single.name, 'Boss fights');
     expect(subAlbums.single.relativePath, 'Boss fights');
   });
+
+  test(
+    'orders albums without regard to case, accents or digit width',
+    () async {
+      final output = await Directory.systemTemp.createTemp('gaming-memories-');
+      addTearDown(() => output.delete(recursive: true));
+      Future<void> capture(List<String> segments) async {
+        final directory = Directory(p.joinAll([output.path, ...segments]));
+        await directory.create(recursive: true);
+        await File(p.join(directory.path, 'capture.jpg')).writeAsBytes([1]);
+      }
+
+      for (final name in _sortedNames.reversed) {
+        await capture(['PC', name]);
+        await capture(['PC', 'Celeste', name]);
+      }
+      await capture(['nintendo Switch', 'Game']);
+      await capture(['Steam', 'Game']);
+      final scanner = LibraryScanner(
+        thumbnailService: const _FakeThumbnailService(),
+      );
+
+      final tree = await scanner.folderTree(output.path);
+      expect(tree.map((folder) => folder.name), [
+        'nintendo Switch',
+        'PC',
+        'Steam',
+      ]);
+      expect(tree[1].children.map((folder) => folder.name), _sortedNames);
+
+      final library = await scanner.scan(output.path);
+      expect(library.albums.map((album) => '${album.platform}/${album.game}'), [
+        'nintendo Switch/Game',
+        ..._sortedNames.map((name) => 'PC/$name'),
+        'Steam/Game',
+      ]);
+
+      expect(
+        (await scanner.subAlbumTree(
+          output.path,
+          'PC',
+          'Celeste',
+        )).map((folder) => folder.name),
+        _sortedNames,
+      );
+      expect(
+        (await scanner.folderContents(
+          output.path,
+          'PC',
+          'Celeste',
+        )).folders.map((folder) => folder.name),
+        _sortedNames,
+      );
+    },
+  );
 
   test('skips dot-prefixed folders at every album depth', () async {
     final output = await Directory.systemTemp.createTemp('gaming-memories-');
