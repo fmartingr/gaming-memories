@@ -122,7 +122,13 @@ void main() {
         ),
       );
 
-      expect(result.imported, 12);
+      expect(result.imported, 11);
+      expect(
+        Directory(
+          p.join(output.path, 'PC', 'World of Warcraft - Forever (Beta)'),
+        ).existsSync(),
+        isFalse,
+      );
       for (final relative in [
         ['Overwatch', '2026-09-17_08-09-10.jpg'],
         ['Heroes of the Storm', '2026-09-18_09-10-11.jpg'],
@@ -130,7 +136,6 @@ void main() {
         ['World of Warcraft', '2026-09-20_11-22-33.jpg'],
         ['World of Warcraft - Classic', '2026-09-21_12-23-34.png'],
         ['World of Warcraft - Classic Era', '2026-09-21_12-23-35.jpg'],
-        ['World of Warcraft - Forever (Beta)', '2026-09-22_13-24-35.jpg'],
         ['World of Warcraft - Classic Anniversary', '2026-09-23_14-25-36.jpg'],
         ['World of Warcraft - Forever', '2026-09-24_15-26-37.jpg'],
         ['Diablo III', '2026-09-23_14-25-36.jpg'],
@@ -149,7 +154,6 @@ void main() {
         'World of Warcraft - Classic Era': 'wow-classic.jpg',
         'World of Warcraft - Classic Anniversary':
             'wow-classic-anniversary.webp',
-        'World of Warcraft - Forever (Beta)': 'wow-forever-beta.png',
         'World of Warcraft - Forever': 'wow-forever.png',
         'Heroes of the Storm': 'heroes-of-the-storm.png',
         'Warcraft III - Reforged': 'warcraft-iii-reforged.png',

@@ -33,7 +33,6 @@ void main() {
       'wow_classic',
       'wow_classic_era',
       'wow_anniversary',
-      'wow_forever_beta',
       'wow_forever',
       'diablo_iv',
       'diablo_iii',
@@ -56,10 +55,6 @@ void main() {
       game('wow_anniversary').albumName,
       'World of Warcraft - Classic Anniversary',
     );
-    expect(
-      game('wow_forever_beta').albumName,
-      'World of Warcraft - Forever (Beta)',
-    );
     expect(game('wow_forever').albumName, 'World of Warcraft - Forever');
   });
 
@@ -69,7 +64,6 @@ void main() {
       'wow_classic',
       'wow_classic_era',
       'wow_anniversary',
-      'wow_forever_beta',
       'wow_forever',
     ]) {
       expect(game(id).extensions, contains('.tga'));
@@ -89,7 +83,6 @@ void main() {
       'wow_classic': '_classic_',
       'wow_classic_era': '_classic_era_',
       'wow_anniversary': '_anniversary_',
-      'wow_forever_beta': '_classic_beta_',
       'wow_forever': '_forever_',
     };
     for (final entry in flavors.entries) {
