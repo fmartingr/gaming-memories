@@ -148,13 +148,6 @@ final battleNetGames = <BattleNetGame>[
     coverAsset: 'wow-classic-anniversary.webp',
   ),
   _worldOfWarcraft(
-    id: 'wow_forever_beta',
-    name: 'World of Warcraft - Forever (Beta)',
-    albumName: 'World of Warcraft - Forever (Beta)',
-    flavor: '_classic_beta_',
-    coverAsset: 'wow-forever-beta.png',
-  ),
-  _worldOfWarcraft(
     id: 'wow_forever',
     name: 'World of Warcraft - Forever',
     albumName: 'World of Warcraft - Forever',
